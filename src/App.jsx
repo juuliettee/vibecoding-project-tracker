@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import TaskModal from './components/TaskModal.jsx';
 
 /**
  * Vibecoding Project Tracker — VibeFlow
@@ -112,6 +113,32 @@ export function useLocalStorage(key, initialValue) {
 
 export default function App() {
   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', INITIAL_TASKS);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingTask, setEditingTask] = useState(null);
+
+  const handleOpenCreateModal = () => {
+    setEditingTask(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (task) => {
+    setEditingTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = (savedTask) => {
+    setTasks((prevTasks) => {
+      const exists = prevTasks.some((t) => t.id === savedTask.id);
+      if (exists) {
+        return prevTasks.map((t) => (t.id === savedTask.id ? savedTask : t));
+      }
+      return [savedTask, ...prevTasks];
+    });
+  };
+
+  const handleDeleteTask = (taskId) => {
+    setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col">
@@ -124,7 +151,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
             </h1>
             <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v0.4 · data-model
+              v0.5 · crud-modal
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
@@ -132,15 +159,36 @@ export default function App() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4 text-xs text-slate-400 font-mono">
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-mono">
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
             <span>Team: {TEAM.join(', ')}</span>
           </div>
+
+          {/* + Add Task Button (DESIGN.md microcopy) */}
+          <button
+            onClick={handleOpenCreateModal}
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white rounded-lg text-xs font-semibold shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition flex items-center gap-1.5"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            + Add Task
+          </button>
         </div>
       </header>
 
-      {/* Main Kanban Board (M4) */}
+      {/* Main Kanban Board (M4 & M5) */}
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
         {STAGES.map((stage) => {
           const stageTasks = tasks.filter((t) => t.status === stage.id);
@@ -171,7 +219,8 @@ export default function App() {
                   stageTasks.map((task) => (
                     <div
                       key={task.id}
-                      className="bg-slate-800/90 hover:bg-slate-800 rounded-lg p-4 border border-slate-700/70 shadow-sm hover:shadow transition-all group"
+                      onClick={() => handleOpenEditModal(task)}
+                      className="bg-slate-800/90 hover:bg-slate-800 rounded-lg p-4 border border-slate-700/70 shadow-sm hover:shadow-md transition-all group cursor-pointer hover:border-slate-600"
                     >
                       {/* Card Type Badge & ID */}
                       <div className="flex items-center justify-between mb-2">
@@ -221,6 +270,17 @@ export default function App() {
           );
         })}
       </main>
+
+      {/* CRUD Modal */}
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
+        task={editingTask}
+        team={TEAM}
+        stages={STAGES}
+      />
     </div>
   );
 }
