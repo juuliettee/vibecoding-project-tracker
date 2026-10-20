@@ -2,8 +2,57 @@ import React from 'react';
 
 const DEFAULT_TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
 
+/**
+ * Evaluates the due-date status according to DESIGN.md §2:
+ * - due-safe (#10b981): More than 2 days out.
+ * - due-warning (#f59e0b): Less than 24 hours (or today/tomorrow).
+ * - due-overdue (#ef4444): Past due date.
+ * - due-neutral (#64748b): Task is 'done' (overrides date) or no date set.
+ */
+export function getDueDateStatus(task) {
+  if (!task || !task.dueDate || task.status === 'done') {
+    return 'neutral';
+  }
+
+  // Parse YYYY-MM-DD
+  const [year, month, day] = task.dueDate.split('-').map(Number);
+  if (!year || !month || !day) return 'neutral';
+
+  // Compare with current local date (midnighted for day-level difference)
+  const dueDateTime = new Date(year, month - 1, day).getTime();
+  const now = new Date();
+  const todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+
+  const diffDays = Math.round((dueDateTime - todayTime) / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) {
+    return 'overdue';
+  } else if (diffDays <= 1) {
+    // Today or tomorrow (less than 24-48 hours depending on interpretation, prompt says: Less than 24 hours (or today/tomorrow))
+    return 'warning';
+  } else {
+    return 'safe';
+  }
+}
+
+export function getDueDateBadgeStyles(status) {
+  switch (status) {
+    case 'overdue':
+      return 'text-red-400 bg-red-500/10 border border-red-500/30';
+    case 'warning':
+      return 'text-amber-400 bg-amber-500/10 border border-amber-500/30';
+    case 'safe':
+      return 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30';
+    case 'neutral':
+    default:
+      return 'text-slate-400 bg-slate-800 border border-slate-700/60';
+  }
+}
+
 export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff }) {
   const isFeature = task.type === 'feature';
+  const dueDateStatus = getDueDateStatus(task);
+  const badgeStyles = getDueDateBadgeStyles(dueDateStatus);
 
   return (
     <div
@@ -90,7 +139,13 @@ export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff
           </select>
         </div>
         {task.dueDate && (
-          <span className="font-mono text-[11px] text-slate-400">
+          <span
+            className={`inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded ${badgeStyles}`}
+            title={`Due: ${task.dueDate} (${dueDateStatus})`}
+          >
+            <svg className="w-3 h-3 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
             {task.dueDate}
           </span>
         )}
