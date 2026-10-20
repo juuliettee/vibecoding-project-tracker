@@ -1,24 +1,10 @@
 import { useState, useEffect } from 'react';
 import TaskModal from './components/TaskModal.jsx';
+import TaskCard from './components/TaskCard.jsx';
 
 /**
  * Vibecoding Project Tracker — VibeFlow
  * Built according to PRD.md & DESIGN.md.
- */
-
-/**
- * @typedef {Object} Task
- * @property {string} id
- * @property {string} title
- * @property {string} description
- * @property {'feature'|'bug'} type
- * @property {'todo'|'in-progress'|'review'|'done'} status
- * @property {string} assignee
- * @property {string|null} dueDate     ISO 'YYYY-MM-DD'
- * @property {string} createdDate      ISO 'YYYY-MM-DD'
- * @property {string} context
- * @property {string|null} contextTool
- * @property {string|null} contextUpdatedAt
  */
 
 // The four columns of the board, in render order.
@@ -151,7 +137,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
             </h1>
             <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v0.5 · crud-modal
+              v0.6 · tag-style
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
@@ -165,7 +151,6 @@ export default function App() {
             <span>Team: {TEAM.join(', ')}</span>
           </div>
 
-          {/* + Add Task Button (DESIGN.md microcopy) */}
           <button
             onClick={handleOpenCreateModal}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white rounded-lg text-xs font-semibold shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition flex items-center gap-1.5"
@@ -188,7 +173,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Kanban Board (M4 & M5) */}
+      {/* Main Kanban Board */}
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
         {STAGES.map((stage) => {
           const stageTasks = tasks.filter((t) => t.status === stage.id);
@@ -217,52 +202,11 @@ export default function App() {
                   </div>
                 ) : (
                   stageTasks.map((task) => (
-                    <div
+                    <TaskCard
                       key={task.id}
+                      task={task}
                       onClick={() => handleOpenEditModal(task)}
-                      className="bg-slate-800/90 hover:bg-slate-800 rounded-lg p-4 border border-slate-700/70 shadow-sm hover:shadow-md transition-all group cursor-pointer hover:border-slate-600"
-                    >
-                      {/* Card Type Badge & ID */}
-                      <div className="flex items-center justify-between mb-2">
-                        <span
-                          className={`text-[11px] font-mono uppercase px-2 py-0.5 rounded border font-semibold ${
-                            task.type === 'feature'
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                              : 'bg-red-500/10 text-red-400 border-red-500/20'
-                          }`}
-                        >
-                          {task.type}
-                        </span>
-                        <span className="text-[11px] font-mono text-slate-500">
-                          {task.id}
-                        </span>
-                      </div>
-
-                      {/* Card Title & Description */}
-                      <h3 className="text-sm font-medium text-slate-100 group-hover:text-indigo-300 transition-colors">
-                        {task.title}
-                      </h3>
-                      {task.description && (
-                        <p className="text-xs text-slate-400 mt-1 line-clamp-2">
-                          {task.description}
-                        </p>
-                      )}
-
-                      {/* Card Footer: Assignee & Due Date */}
-                      <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-                        <div className="flex items-center gap-1.5">
-                          <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-[10px] font-bold">
-                            {task.assignee.charAt(0)}
-                          </span>
-                          <span className="truncate max-w-[90px]">{task.assignee}</span>
-                        </div>
-                        {task.dueDate && (
-                          <span className="font-mono text-[11px] text-slate-400">
-                            {task.dueDate}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                    />
                   ))
                 )}
               </div>
