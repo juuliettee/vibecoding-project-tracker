@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import TaskModal from './components/TaskModal.jsx';
 import TaskCard from './components/TaskCard.jsx';
+import Toast from './components/Toast.jsx';
 
 /**
  * Vibecoding Project Tracker — VibeFlow
@@ -101,6 +102,7 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', INITIAL_TASKS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleOpenCreateModal = () => {
     setEditingTask(null);
@@ -126,6 +128,13 @@ export default function App() {
     setTasks((prevTasks) => prevTasks.filter((t) => t.id !== taskId));
   };
 
+  const handleHandoffTask = (taskId, newAssignee) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((t) => (t.id === taskId ? { ...t, assignee: newAssignee } : t))
+    );
+    setToastMessage(`Handed off to ${newAssignee}. They've got it!`);
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col">
       {/* App Header */}
@@ -137,7 +146,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
             </h1>
             <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v0.6 · tag-style
+              v0.7 · task-owner
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
@@ -205,7 +214,9 @@ export default function App() {
                     <TaskCard
                       key={task.id}
                       task={task}
+                      team={TEAM}
                       onClick={() => handleOpenEditModal(task)}
+                      onHandoff={handleHandoffTask}
                     />
                   ))
                 )}
@@ -225,6 +236,9 @@ export default function App() {
         team={TEAM}
         stages={STAGES}
       />
+
+      {/* Toast Notification */}
+      <Toast message={toastMessage} onClose={() => setToastMessage('')} />
     </div>
   );
 }

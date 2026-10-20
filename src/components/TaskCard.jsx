@@ -1,6 +1,8 @@
 import React from 'react';
 
-export default function TaskCard({ task, onClick }) {
+const DEFAULT_TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
+
+export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff }) {
   const isFeature = task.type === 'feature';
 
   return (
@@ -63,11 +65,29 @@ export default function TaskCard({ task, onClick }) {
 
       {/* Footer: Assignee & Due Date */}
       <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-        <div className="flex items-center gap-1.5">
+        <div
+          className="flex items-center gap-1.5"
+          onClick={(e) => e.stopPropagation()}
+        >
           <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-[10px] font-bold">
-            {task.assignee.charAt(0)}
+            {task.assignee ? task.assignee.charAt(0) : '?'}
           </span>
-          <span className="truncate max-w-[90px]">{task.assignee}</span>
+          <select
+            value={task.assignee}
+            onChange={(e) => {
+              e.stopPropagation();
+              onHandoff && onHandoff(task.id, e.target.value);
+            }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded px-1.5 py-0.5 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer max-w-[110px] truncate"
+            title="Hand off to teammate"
+          >
+            {team.map((member) => (
+              <option key={member} value={member}>
+                {member}
+              </option>
+            ))}
+          </select>
         </div>
         {task.dueDate && (
           <span className="font-mono text-[11px] text-slate-400">
