@@ -2,6 +2,10 @@
   "name": "vibetracker-starter",
   "private": true,
   "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juuliettee/vibecoding-project-tracker.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",

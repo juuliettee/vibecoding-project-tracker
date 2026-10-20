@@ -23,8 +23,8 @@ What you build, starting at M4:
 
 ```bash
 # 1. Fork this repo on GitHub. Then clone YOUR fork:
-git clone https://github.com/<your-team>/<your-fork>.git
-cd <your-fork>
+git clone https://github.com/juuliettee/vibecoding-project-tracker.git
+cd vibecoding-project-tracker
 
 # 2. Install dependencies
 npm install
