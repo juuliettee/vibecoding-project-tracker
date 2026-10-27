@@ -1,5 +1,28 @@
 import { useState, useEffect } from 'react';
 
+const AI_TOOLS = ['Claude', 'ChatGPT', 'Cursor', 'Lovable', 'Replit', 'Other'];
+
+const BRIEFING_TEMPLATE = `Goal: 
+Files to touch: 
+Constraints / Rules: 
+Prompt / Context notes: `;
+
+export function formatContextTimestamp(isoString) {
+  if (!isoString) return null;
+  try {
+    const date = new Date(isoString);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toLocaleString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return null;
+  }
+}
+
 export default function TaskModal({
   isOpen,
   onClose,
@@ -54,9 +77,22 @@ export default function TaskModal({
 
   if (!isOpen) return null;
 
+  const handleInsertTemplate = () => {
+    if (!context.trim()) {
+      setContext(BRIEFING_TEMPLATE);
+    } else {
+      setContext((prev) => `${prev.trim()}\n\n${BRIEFING_TEMPLATE}`);
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
+
+    const trimmedContext = context.trim();
+    const contextChanged =
+      trimmedContext !== (task?.context || '').trim() ||
+      (trimmedContext && contextTool !== task?.contextTool);
 
     const taskPayload = {
       id: task?.id || `task-${Date.now()}`,
@@ -67,11 +103,13 @@ export default function TaskModal({
       assignee,
       dueDate: dueDate || null,
       createdDate: task?.createdDate || new Date().toISOString().slice(0, 10),
-      context: context.trim(),
-      contextTool: context.trim() ? contextTool : null,
-      contextUpdatedAt: context.trim()
-        ? new Date().toISOString()
-        : task?.contextUpdatedAt || null,
+      context: trimmedContext,
+      contextTool: trimmedContext ? contextTool : null,
+      contextUpdatedAt: trimmedContext
+        ? contextChanged || !task?.contextUpdatedAt
+          ? new Date().toISOString()
+          : task.contextUpdatedAt
+        : null,
     };
 
     onSave(taskPayload);
@@ -89,8 +127,13 @@ export default function TaskModal({
     }
   };
 
+  const formattedUpdatedAt = formatContextTimestamp(task?.contextUpdatedAt);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fadeIn"
+      onClick={onClose}
+    >
       <div
         className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-slate-100 flex flex-col max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
@@ -151,7 +194,7 @@ export default function TaskModal({
               Description
             </label>
             <textarea
-              rows={3}
+              rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What needs to be built or fixed?"
@@ -241,32 +284,69 @@ export default function TaskModal({
             </div>
           </div>
 
-          {/* Prompt Context Section (M9 foundation prepared) */}
-          <div className="pt-2">
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                Prompt Context (AI Briefing)
-              </label>
-              <select
-                value={contextTool}
-                onChange={(e) => setContextTool(e.target.value)}
-                className="bg-slate-800 border border-slate-700 rounded px-2 py-0.5 text-xs text-indigo-300 focus:outline-none"
-              >
-                <option value="Cursor">Cursor</option>
-                <option value="Claude">Claude</option>
-                <option value="ChatGPT">ChatGPT</option>
-                <option value="Lovable">Lovable</option>
-                <option value="Replit">Replit</option>
-                <option value="Other">Other</option>
-              </select>
+          {/* M9 Curated Prompt Context Section */}
+          <div className="p-3.5 rounded-xl bg-indigo-950/25 border border-indigo-500/30 space-y-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono">
+                  ✦
+                </span>
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-indigo-300">
+                    Curated Prompt Context
+                  </label>
+                  <p className="text-[11px] text-slate-400">
+                    Paste-ready AI briefing for the next prompt or teammate handoff
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleInsertTemplate}
+                  className="px-2 py-1 rounded text-[11px] font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                  title="Insert structured prompt briefing template"
+                >
+                  + Template
+                </button>
+                <select
+                  value={contextTool}
+                  onChange={(e) => setContextTool(e.target.value)}
+                  className="bg-slate-800 border border-indigo-500/40 rounded px-2 py-1 text-xs font-mono text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  title="AI Tool used for this context"
+                >
+                  {AI_TOOLS.map((tool) => (
+                    <option key={tool} value={tool}>
+                      {tool}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
             <textarea
-              rows={3}
+              rows={4}
               value={context}
               onChange={(e) => setContext(e.target.value)}
-              placeholder="Curated briefing for the next AI / teammate (prompts, constraints, files to touch)..."
-              className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-none"
+              placeholder="Curated briefing for the next AI / teammate (working prompts, architectural constraints, files to touch)..."
+              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y leading-relaxed"
             />
+
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-0.5">
+              <span>
+                {context.trim()
+                  ? `Tool: ${contextTool} · ${context.trim().length} chars`
+                  : 'No prompt context recorded yet'}
+              </span>
+              <span>
+                {formattedUpdatedAt
+                  ? `Last saved: ${formattedUpdatedAt}`
+                  : context.trim()
+                  ? 'Timestamped on save'
+                  : ''}
+              </span>
+            </div>
           </div>
 
           {/* Action Buttons */}

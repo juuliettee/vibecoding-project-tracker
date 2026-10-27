@@ -27,11 +27,12 @@ export const INITIAL_TASKS = [
     type: 'feature',
     status: 'done',
     assignee: 'Juliette',
-    dueDate: '2026-10-21',
+    dueDate: '2026-10-25',
     createdDate: '2026-10-20',
-    context: 'Use Tailwind flex/grid with slate-800 columns and crisp borders.',
+    context:
+      'Goal: Render 4 columns (To Do, In Progress, Review, Done) from STAGES.\nFiles: src/App.jsx\nConstraints: Use Tailwind grid-cols-4 on desktop, dark slate-900 surface, and localStorage persistence.',
     contextTool: 'Cursor',
-    contextUpdatedAt: '2026-10-20T10:00:00.000Z',
+    contextUpdatedAt: '2026-10-25T10:00:00.000Z',
   },
   {
     id: 'task-2',
@@ -40,11 +41,12 @@ export const INITIAL_TASKS = [
     type: 'feature',
     status: 'in-progress',
     assignee: 'Alex Chen',
-    dueDate: '2026-10-22',
+    dueDate: '2026-10-28',
     createdDate: '2026-10-20',
-    context: 'Ensure context field includes tool selection and timestamp tracking.',
+    context:
+      'Goal: Add M9 curated Context briefing textarea, AI tool selector (Claude/ChatGPT/Cursor/Lovable/Replit/Other), and automatic ISO contextUpdatedAt timestamp on save.\nFiles: src/components/TaskModal.jsx',
     contextTool: 'Claude',
-    contextUpdatedAt: '2026-10-20T11:30:00.000Z',
+    contextUpdatedAt: '2026-10-27T11:30:00.000Z',
   },
   {
     id: 'task-3',
@@ -53,11 +55,12 @@ export const INITIAL_TASKS = [
     type: 'bug',
     status: 'todo',
     assignee: 'Sam Rivera',
-    dueDate: '2026-10-20',
+    dueDate: '2026-10-25',
     createdDate: '2026-10-20',
-    context: 'Check event propagation on the select dropdown inside the card header.',
+    context:
+      'Bug: Clicking the assignee <select> inside TaskCard triggers parent card onClick modal open.\nFix: Call e.stopPropagation() on wrapper div and select onChange/onClick handlers in src/components/TaskCard.jsx.',
     contextTool: 'ChatGPT',
-    contextUpdatedAt: '2026-10-20T13:15:00.000Z',
+    contextUpdatedAt: '2026-10-26T13:15:00.000Z',
   },
   {
     id: 'task-4',
@@ -66,11 +69,12 @@ export const INITIAL_TASKS = [
     type: 'feature',
     status: 'review',
     assignee: 'Juliette',
-    dueDate: '2026-10-23',
+    dueDate: '2026-11-02',
     createdDate: '2026-10-20',
-    context: 'Markdown serializer formatting Task title, type, description, and briefing context.',
+    context:
+      'Goal: Build a Markdown serializer combining task title, type, status, description, target AI tool, and curated context block for one-click clipboard copy.\nFiles: src/components/TaskCard.jsx, src/components/TaskModal.jsx',
     contextTool: 'Cursor',
-    contextUpdatedAt: '2026-10-20T13:45:00.000Z',
+    contextUpdatedAt: '2026-10-27T14:45:00.000Z',
   },
 ];
 
@@ -81,7 +85,20 @@ export function useLocalStorage(key, initialValue) {
   const [value, setValue] = useState(() => {
     try {
       const raw = window.localStorage.getItem(key);
-      return raw != null ? JSON.parse(raw) : initialValue;
+      if (raw != null) {
+        const parsed = JSON.parse(raw);
+        // Upgrade early M4-M8 seed tasks to rich M9 context & updated demo dates
+        if (
+          key === 'vibetracker.tasks' &&
+          Array.isArray(parsed) &&
+          parsed.some((t) => t.id === 'task-2' && t.dueDate === '2026-10-22')
+        ) {
+          const seedMap = Object.fromEntries(INITIAL_TASKS.map((t) => [t.id, t]));
+          return parsed.map((t) => (seedMap[t.id] ? seedMap[t.id] : t));
+        }
+        return parsed;
+      }
+      return initialValue;
     } catch {
       return initialValue;
     }
@@ -146,7 +163,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
             </h1>
             <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v0.7 · task-owner
+              v0.9 · context
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
