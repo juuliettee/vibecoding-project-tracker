@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatContextTimestamp } from './TaskModal.jsx';
 
 const DEFAULT_TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
 
@@ -28,7 +29,6 @@ export function getDueDateStatus(task) {
   if (diffDays < 0) {
     return 'overdue';
   } else if (diffDays <= 1) {
-    // Today or tomorrow (less than 24-48 hours depending on interpretation, prompt says: Less than 24 hours (or today/tomorrow))
     return 'warning';
   } else {
     return 'safe';
@@ -49,15 +49,32 @@ export function getDueDateBadgeStyles(status) {
   }
 }
 
+export function getDueDateCardTint(status) {
+  switch (status) {
+    case 'overdue':
+      return 'bg-red-950/20 border-red-500/40 hover:border-red-400/60';
+    case 'warning':
+      return 'bg-amber-950/20 border-amber-500/40 hover:border-amber-400/60';
+    case 'safe':
+      return 'bg-slate-800/90 border-emerald-500/25 hover:border-emerald-500/45';
+    case 'neutral':
+    default:
+      return 'bg-slate-800/90 border-slate-700/70 hover:border-slate-600';
+  }
+}
+
 export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff }) {
   const isFeature = task.type === 'feature';
   const dueDateStatus = getDueDateStatus(task);
   const badgeStyles = getDueDateBadgeStyles(dueDateStatus);
+  const cardTintStyles = getDueDateCardTint(dueDateStatus);
+  const hasContext = Boolean(task.context && task.context.trim());
+  const updatedTimeLabel = formatContextTimestamp(task.contextUpdatedAt);
 
   return (
     <div
       onClick={onClick}
-      className={`bg-slate-800/90 hover:bg-slate-800 rounded-lg p-4 border border-slate-700/70 shadow-sm hover:shadow-md transition-all group cursor-pointer hover:border-slate-600 ${
+      className={`hover:bg-slate-800 rounded-lg p-4 border shadow-sm hover:shadow-md transition-all group cursor-pointer ${cardTintStyles} ${
         isFeature
           ? 'border-l-4 border-l-emerald-500'
           : 'border-l-4 border-l-red-500'
@@ -110,6 +127,26 @@ export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff
         <p className="text-xs text-slate-400 mt-1 line-clamp-2">
           {task.description}
         </p>
+      )}
+
+      {/* M9 Prompt Context Indicator & Snippet */}
+      {hasContext && (
+        <div className="mt-2.5 p-2 rounded-md bg-slate-900/75 border border-indigo-500/25">
+          <div className="flex items-center justify-between gap-1.5 mb-1">
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded border border-indigo-500/30">
+              <span>✦</span>
+              <span>{task.contextTool || 'AI Context'}</span>
+            </span>
+            {updatedTimeLabel && (
+              <span className="text-[10px] font-mono text-slate-500 truncate">
+                {updatedTimeLabel}
+              </span>
+            )}
+          </div>
+          <p className="text-[11px] font-mono text-slate-300 line-clamp-2 leading-snug">
+            {task.context}
+          </p>
+        </div>
       )}
 
       {/* Footer: Assignee & Due Date */}
