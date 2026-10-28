@@ -512,7 +512,7 @@ export default function App() {
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="px-4 py-2 bg-brand-primary hover:opacity-90 active:scale-95 text-white rounded-lg text-xs font-semibold shadow-lg shadow-brand-primary/25 transition"
+            className="px-4 py-2 bg-brand-primary hover:opacity-90 active:scale-95 text-slate-950 rounded-lg text-xs font-semibold shadow-lg shadow-brand-primary/25 transition"
           >
             + Add Task
           </button>

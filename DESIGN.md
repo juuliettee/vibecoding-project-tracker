@@ -28,8 +28,8 @@ Defined in `tailwind.config.js` and `src/index.css` using Tailwind's Slate palet
 
 | Token | Default Hex / RGB | Where it shows up |
 |---|---|---|
-| `brand.primary` | `#6366f1` (`99 102 241`) | Primary buttons, active filter pills, focus rings, prompt badges (configurable in Accessibility Menu) |
-| `brand.accent` | `#8b5cf6` (`139 92 246`) | Wordmark gradient, secondary highlights, report deliverable icon |
+| `brand.primary` | `#a5b4fc` (`165 180 252`) | Primary buttons, active filter pills, focus rings, prompt badges (configurable in Accessibility Menu) |
+| `brand.accent` | `#c4b5fd` (`196 181 253`) | Wordmark gradient, secondary highlights, report deliverable icon |
 | `surface.page` | `#0f172a` | Main page background and modal surfaces |
 | `surface.card` | `#1e293b` | Task cards, inputs, dropdowns, and toast background |
 | `text-primary` | `#f8fafc` | Primary headings, card titles, and body copy |
@@ -39,19 +39,19 @@ Defined in `tailwind.config.js` and `src/index.css` using Tailwind's Slate palet
 
 | Token | Hex | When used |
 |---|---|---|
-| `type-feature` | `#10b981` | Cards tagged `feature` (4px left emerald border + bolt icon + `FEATURE` label) |
-| `type-bug` | `#ef4444` | Cards tagged `bug` (4px left red border + warning icon + `BUG` label) |
+| `type-feature` | `#34d399` | Cards tagged `feature` (4px left emerald border + bolt icon + `FEATURE` label) |
+| `type-bug` | `#fca5a5` | Cards tagged `bug` (4px left red border + warning icon + `BUG` label) |
 
 ### Due-date urgency tokens (`due-tint`)
 
-Every due-date badge pairs its colour with an explicit text label (`On track`, `Due soon`, `Overdue`, `Done`) by default so deadline urgency is never communicated by colour alone (WCAG 1.4.1).
+Every due-date badge pairs its colour with an explicit text label (`On track`, `Due soon`, `Overdue`, `Done`) by default so deadline urgency is never communicated by colour alone (WCAG 1.4.1), and uses lighter tints (`-300`/`-400`) that pass ≥ 4.5:1 contrast on dark card surfaces (WCAG 1.4.3).
 
 | Token | Hex | Label | When used |
 |---|---|---|---|
-| `due.safe` | `#10b981` | `On track` | 2 or more days away |
-| `due.warning` | `#f59e0b` | `Due soon` | Due today or tomorrow (0–1 days away) |
-| `due.overdue` | `#ef4444` | `Overdue` | Past due date (< 0 days) |
-| `due.neutral` | `#64748b` | `Done` | Task is in `Done` stage (overrides due date) or has no due date |
+| `due.safe` | `#34d399` | `On track` | 2 or more days away |
+| `due.warning` | `#fbbf24` | `Due soon` | Due today or tomorrow (0–1 days away) |
+| `due.overdue` | `#fca5a5` | `Overdue` | Past due date (< 0 days) |
+| `due.neutral` | `#94a3b8` | `Done` | Task is in `Done` stage (overrides due date) or has no due date |
 
 ## 3. Typography & Display Options
 
@@ -66,7 +66,7 @@ Display & accessibility controls:
 
 - **Text Size Options:** Toggle between `100%` (`normal`), `110%` (`large`), and `120%` (`xlarge`) root font sizes via the Accessibility Menu (alongside standard browser zoom up to 200%).
 - **High-Contrast Borders:** Upgrades card and column outlines to thicker 2px borders with stronger surface contrast.
-- **User-Defined Accent Colours:** Supports 3 cool RGB themes (`Indigo`, `Violet`, `Cyan`). Green, amber, and red accents are intentionally excluded so the brand colour never clashes with `Feature`/`On track` (`#10b981`), `Due soon` (`#f59e0b`), or `Bug`/`Overdue` (`#ef4444`).
+- **User-Defined Accent Colours:** Supports 3 cool RGB themes (`Indigo`, `Violet`, `Cyan`). Green, amber, and red accents are intentionally excluded so the brand colour never clashes with `Feature`/`On track` (`#34d399`), `Due soon` (`#fbbf24`), or `Bug`/`Overdue` (`#fca5a5`).
 - **Keyboard & Screen Reader Semantics:** Modals implement `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and `Escape` key dismissal; toast notifications use `role="status"` and `aria-live="polite"`.
 
 ## 4. Component principles

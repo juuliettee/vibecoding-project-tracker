@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 :root {
-  --brand-primary: 99 102 241; /* #6366f1 Indigo default */
-  --brand-accent: 139 92 246;  /* #8b5cf6 Violet default */
+  --brand-primary: 165 180 252; /* #a5b4fc Indigo default (>= 7.3:1 on cards) */
+  --brand-accent: 196 181 253;  /* #c4b5fd Violet default */
 }
 
 html, body, #root {

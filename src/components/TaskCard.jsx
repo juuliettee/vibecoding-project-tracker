@@ -12,10 +12,10 @@ const DEFAULT_STAGES = [
 
 /**
  * Evaluates the due-date status according to DESIGN.md §2:
- * - due-safe (#10b981): 2 or more days away.
- * - due-warning (#f59e0b): Due today or tomorrow (0–1 days away).
- * - due-overdue (#ef4444): Past due date (< 0 days).
- * - due-neutral (#64748b): Task is 'done' (overrides due date) or no date set.
+ * - due-safe (#34d399): 2 or more days away.
+ * - due-warning (#fbbf24): Due today or tomorrow (0–1 days away).
+ * - due-overdue (#fca5a5): Past due date (< 0 days).
+ * - due-neutral (#94a3b8): Task is 'done' (overrides due date) or no date set.
  */
 export function getDueDateStatus(task) {
   if (!task || !task.dueDate || task.status === 'done') {

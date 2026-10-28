@@ -212,7 +212,7 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                       <button
                         type="button"
                         onClick={() => handleSave(anchor.id)}
-                        className="px-2.5 py-1 rounded text-[10px] font-mono font-semibold bg-brand-primary hover:opacity-90 text-white transition"
+                        className="px-2.5 py-1 rounded text-[10px] font-mono font-semibold bg-brand-primary hover:opacity-90 text-slate-950 transition"
                       >
                         Save Link
                       </button>

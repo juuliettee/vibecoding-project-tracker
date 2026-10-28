@@ -4,23 +4,23 @@ export const ACCENT_THEMES = [
   {
     id: 'indigo',
     label: 'Indigo (Default)',
-    hex: '#6366f1',
-    rgb: '99 102 241',
-    accentRgb: '139 92 246',
+    hex: '#a5b4fc',
+    rgb: '165 180 252',
+    accentRgb: '196 181 253',
   },
   {
     id: 'violet',
     label: 'Violet',
-    hex: '#8b5cf6',
-    rgb: '139 92 246',
-    accentRgb: '167 139 250',
+    hex: '#c4b5fd',
+    rgb: '196 181 253',
+    accentRgb: '221 214 254',
   },
   {
     id: 'cyan',
     label: 'Cyan',
-    hex: '#06b6d4',
-    rgb: '6 182 212',
-    accentRgb: '34 211 238',
+    hex: '#22d3ee',
+    rgb: '34 211 238',
+    accentRgb: '103 232 249',
   },
 ];
 

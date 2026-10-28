@@ -464,7 +464,7 @@ export default function TaskModal({
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-white shadow-md shadow-brand-primary/30 transition"
+                className="px-5 py-2 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-slate-950 shadow-md shadow-brand-primary/30 transition"
               >
                 {isEditing ? 'Save Changes' : '+ Add Task'}
               </button>

@@ -204,7 +204,7 @@ export default function LoginModal({
 
           <button
             type="submit"
-            className="w-full py-2.5 px-4 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-white shadow-lg shadow-brand-primary/25 transition"
+            className="w-full py-2.5 px-4 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-slate-950 shadow-lg shadow-brand-primary/25 transition"
           >
             Sign In to Workspace
           </button>

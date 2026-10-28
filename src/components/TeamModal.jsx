@@ -235,7 +235,7 @@ export default function TeamModal({
           <div className="flex justify-end pt-1">
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-white shadow-md shadow-brand-primary/25 transition"
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-slate-950 shadow-md shadow-brand-primary/25 transition"
             >
               + Add to Team
             </button>
