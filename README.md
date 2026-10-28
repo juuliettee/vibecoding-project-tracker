@@ -1,103 +1,58 @@
-# Vibecoding Project Tracker — Hackathon Starter
+# VibeFlow — Vibecoding Project Tracker
 
-You're forking this repo as the starting point for the **UXD Vibecoding Hackathon 2026**. The goal of the hackathon is to ship a Vibecoding Project Tracker in ~3 hours: a Kanban-style tool that tracks your vibecoding tasks and stores the prompts that produced them.
-
-This starter gives you:
-
-- A pre-written **PRD** (`PRD.md`) — read it. You don't write the PRD this year; your Milestone 2 is to review, fill in the team-specific TODOs, and commit.
-- A pre-written **DESIGN.md** with the design-system slots Person B fills in during M3 (in parallel with M2).
-- A **Vite + React + Tailwind** scaffold with the boilerplate already configured.
-- The locked `Task` data model and `STAGES` constant in `src/App.jsx`.
-- A `useLocalStorage` hook so persistence is one line.
-- Empty TODO markers for every milestone, so AI tools can find them.
-
-What you build, starting at M4:
-
-- The four-column Kanban board.
-- The add / edit / delete modal.
-- The Prompt Context field (the differentiator).
-- The "Copy as Prompt Context" button (the demo's hero moment).
-- And everything else through M13.
-
-## Quick start
-
-```bash
-# 1. Fork this repo on GitHub. Then clone YOUR fork:
-git clone https://github.com/juuliettee/vibecoding-project-tracker.git
-cd vibecoding-project-tracker
-
-# 2. Install dependencies
-npm install
-
-# 3. Run the dev server
-npm run dev
-```
-
-Open the URL Vite prints (typically `http://localhost:5173`). You should see a placeholder page with the team starter header and "Build the four-column board here · M3" in the middle. That's expected — M3 is your first build milestone.
-
-## Milestone workflow
-
-Every milestone ends with a git tag push. The Hackathon Portal dashboard watches your tags and updates the scoreboard in near real time.
-
-```bash
-git add .
-git commit -m "<tag-name>"
-git tag <tag-name>
-git push --tags
-```
-
-Replace `<tag-name>` with the tag for the milestone you just finished — see the table below. Tag names are lowercase, hyphenated, exact.
-
-| # | Tag | What it means |
-|---|---|---|
-| 1 | `git-linked` | Repo registered on the portal, webhook delivers test ping |
-| 2 | `prd-done` | PRD reviewed, team-specific TODOs filled in |
-| 3 | `design-done` | DESIGN.md filled in, color tokens pasted into `tailwind.config.js` (parallel to M2) |
-| 4 | `data-model` | Four-column board renders with 3-4 mock tasks |
-| 5 | `crud-modal` | Add / edit / delete tasks via a modal, persisted to localStorage |
-| 6 | `tag-style` | Feature vs. bug visual distinction |
-| 7 | `task-owner` | Assignee badge on each card + "Hand off to..." dropdown |
-| 8 | `due-tint` | Cards change color as deadlines approach |
-| 9 | `context` | Curated Context field on the task modal (paste-ready briefing) |
-| 10 | `copy-prompt` | One-click copy formatted prompt to clipboard |
-| 11 | `project-deliverables` | Deliverable Anchor Board pinned above the Kanban |
-| 12 | `secret-sauce` | The one thing that makes your tracker uniquely yours (open-ended) |
-| 13 | `pitch-ready` | Demo dataset loaded, pitch rehearsed |
-
-## Repo map
-
-```
-.
-├── PRD.md              ← READ THIS FIRST · review + fill in TODOs for M2
-├── DESIGN.md           ← Person B fills this in for M3 (parallel to M2)
-├── README.md           ← you are here
-├── package.json
-├── vite.config.js
-├── tailwind.config.js  ← M3 design tokens land here too
-├── postcss.config.js
-├── index.html
-├── .gitignore
-└── src/
-    ├── main.jsx        ← React entry point — don't change
-    ├── index.css       ← Tailwind directives — don't change
-    └── App.jsx         ← all your code goes here (or split into more files)
-```
-
-## Deploy (any time after M3)
-
-Vercel's free tier deploys a Vite + React app in one click:
-
-1. Go to [vercel.com](https://vercel.com), sign in with GitHub.
-2. Import your fork.
-3. Accept the defaults (Vite is auto-detected). Click Deploy.
-4. Drop the resulting URL into PRD §11 and into your team chat.
-
-Re-deploys happen automatically on every push to `main`.
-
-## A word about prompts
-
-Once M9 (`context`) is done, keep the Context field of each real task up to date as you work. By the end of the hackathon you should have a handful of curated context blocks on real tasks — those become part of your Module 5 "Vibe Coding History" deliverable. Free credit, just by using your own tool.
+**VibeFlow** is a Kanban-style project and prompt context tracker designed for software engineering teams building with AI coding assistants (Claude, ChatGPT, Cursor, Lovable, Replit). It pairs task lifecycle tracking with curated prompt briefings so teammates can hand off tasks and resume AI pair-programming sessions without losing prompt context.
 
 ---
 
-*UXD Vibecoding Hackathon 2026 · Prof. Dr. Ignacio Alvarez*
+## Key Features
+
+- **Workspace Demo Sign-In & Profile Switcher:** Presents a client-side sign-in screen on initial load with one-click demo user profiles (`Juliette`, `Alex Chen`, `Sam Rivera`) and an email + demo passcode (`2026`) form, plus instant profile switching and sign-out from the header.
+- **Four-Stage Kanban Board:** Tracks tasks across `To Do`, `In Progress`, `Review`, and `Done` with inline stage switching, task counts, and full `localStorage` persistence.
+- **Visual Type & Deadline Tinting:** Distinguishes `Feature` (`#10b981`) vs. `Bug` (`#ef4444`) tasks with left accent stripes and highlights deadline urgency (`Overdue`, `Warning`, `Safe`, and `Neutral` when completed).
+- **Curated Prompt Context & One-Click Copy:** Stores the working prompt briefing, target AI tool, and last-saved timestamp on every task. Clicking **Copy as Prompt Context** serializes the task and prompt context into a structured Markdown briefing on the clipboard.
+- **Vibe Coding Prompt History Studio:** Aggregates all curated prompts across the project into a searchable studio with one-click full Markdown history export.
+- **Pinned Deliverable Anchor Board:** Provides four deliverable slots (`Presentation`, `Demo`, `Report`, `Documentation`) above the Kanban board where team members can paste, edit, and pin project links as they are produced.
+- **Team Directory & Role Management:** Stores team member names, `@example.com` contact emails, and specialist roles (`Senior Developer`, `Junior Developer`, `Architect`, `UX Member`, `Database Creator`, `Software Engineer`), supporting dynamic addition and removal of team members.
+- **Accessibility & Custom Theme Suite:** Includes WCAG text size scaling (`100%`, `110%`, `120%`), High-Contrast border and explicit `[OVERDUE]`/`[WARNING]`/`[SAFE]` status tag mode, six user-definable RGB brand accent colours, keyboard navigation, and ARIA semantics.
+
+---
+
+## Local Development
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Start the Vite development server
+npm run dev
+
+# 3. Build for production
+npm run build
+```
+
+---
+
+## Project Structure
+
+```text
+.
+├── PRD.md                           # Product Requirements Document
+├── DESIGN.md                        # Design System & Accessibility Specification
+├── PITCH.md                         # 5-Minute Pitch & Live Demo Walkthrough
+├── index.html                       # App entry HTML (loads Inter & JetBrains Mono)
+├── tailwind.config.js               # Design tokens, RGB CSS variables & animations
+└── src/
+    ├── App.jsx                      # Main board, filter bar & localStorage state
+    ├── index.css                    # Tailwind directives & root CSS variables
+    ├── utils/
+    │   └── promptSerializer.js      # Markdown prompt context serializer & clipboard helper
+    └── components/
+        ├── AnchorBoard.jsx          # Pinned Deliverable Anchor Board
+        ├── TaskCard.jsx             # Kanban task card with inline handoff, stage & copy actions
+        ├── TaskModal.jsx            # Create / Edit / Delete task modal with Prompt Context
+        ├── PromptVaultModal.jsx     # Vibe Coding Prompt History Studio & Markdown exporter
+        ├── LoginModal.jsx           # Client-side demo sign-in & profile switcher
+        ├── TeamModal.jsx            # Team directory & role management modal
+        ├── AccessibilityMenu.jsx    # Text scaling, high-contrast & accent colour controls
+        └── Toast.jsx                # Accessible live-region toast notifications
+```

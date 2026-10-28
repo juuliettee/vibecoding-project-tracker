@@ -22,11 +22,9 @@ export function getDueDateStatus(task) {
     return 'neutral';
   }
 
-  // Parse YYYY-MM-DD
   const [year, month, day] = task.dueDate.split('-').map(Number);
   if (!year || !month || !day) return 'neutral';
 
-  // Compare with current local date (midnighted for day-level difference)
   const dueDateTime = new Date(year, month - 1, day).getTime();
   const now = new Date();
   const todayTime = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -45,14 +43,14 @@ export function getDueDateStatus(task) {
 export function getDueDateBadgeStyles(status) {
   switch (status) {
     case 'overdue':
-      return 'text-red-400 bg-red-500/10 border border-red-500/30';
+      return 'text-due-overdue bg-due-overdue/10 border border-due-overdue/30';
     case 'warning':
-      return 'text-amber-400 bg-amber-500/10 border border-amber-500/30';
+      return 'text-due-warning bg-due-warning/10 border border-due-warning/30';
     case 'safe':
-      return 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30';
+      return 'text-due-safe bg-due-safe/10 border border-due-safe/30';
     case 'neutral':
     default:
-      return 'text-slate-400 bg-slate-800 border border-slate-700/60';
+      return 'text-due-neutral bg-surface-page border border-slate-700/60';
   }
 }
 
@@ -60,27 +58,27 @@ export function getDueDateCardTint(status, highContrast = false) {
   if (highContrast) {
     switch (status) {
       case 'overdue':
-        return 'bg-red-950/35 border-2 border-red-400';
+        return 'bg-red-950/35 border-2 border-due-overdue';
       case 'warning':
-        return 'bg-amber-950/35 border-2 border-amber-400';
+        return 'bg-amber-950/35 border-2 border-due-warning';
       case 'safe':
-        return 'bg-slate-800 border-2 border-emerald-400/80';
+        return 'bg-surface-card border-2 border-due-safe/80';
       case 'neutral':
       default:
-        return 'bg-slate-800 border-2 border-slate-400';
+        return 'bg-surface-card border-2 border-due-neutral';
     }
   }
 
   switch (status) {
     case 'overdue':
-      return 'bg-red-950/20 border-red-500/40 hover:border-red-400/60';
+      return 'bg-red-950/20 border-due-overdue/40 hover:border-due-overdue/60';
     case 'warning':
-      return 'bg-amber-950/20 border-amber-500/40 hover:border-amber-400/60';
+      return 'bg-amber-950/20 border-due-warning/40 hover:border-due-warning/60';
     case 'safe':
-      return 'bg-slate-800/90 border-emerald-500/25 hover:border-emerald-500/45';
+      return 'bg-surface-card/90 border-due-safe/25 hover:border-due-safe/45';
     case 'neutral':
     default:
-      return 'bg-slate-800/90 border-slate-700/70 hover:border-slate-600';
+      return 'bg-surface-card/90 border-slate-700/70 hover:border-slate-600';
   }
 }
 
@@ -123,10 +121,10 @@ export default function TaskCard({
           onClick && onClick();
         }
       }}
-      className={`hover:bg-slate-800 rounded-lg p-4 border shadow-sm hover:shadow-md transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 ${cardTintStyles} ${
+      className={`hover:bg-surface-card rounded-lg p-4 border shadow-sm hover:shadow-md transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-primary ${cardTintStyles} ${
         isFeature
-          ? 'border-l-4 border-l-emerald-500'
-          : 'border-l-4 border-l-red-500'
+          ? 'border-l-4 border-l-type-feature'
+          : 'border-l-4 border-l-type-bug'
       }`}
     >
       {/* Header: Type Badge, Quick Stage Selector & ID */}
@@ -134,8 +132,8 @@ export default function TaskCard({
         <span
           className={`inline-flex items-center gap-1 text-[11px] font-mono uppercase px-2 py-0.5 rounded font-semibold border ${
             isFeature
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-              : 'bg-red-500/10 text-red-400 border-red-500/30'
+              ? 'bg-type-feature/10 text-type-feature border-type-feature/30'
+              : 'bg-type-bug/10 text-type-bug border-type-bug/30'
           }`}
         >
           {isFeature ? (
@@ -174,7 +172,7 @@ export default function TaskCard({
                 e.stopPropagation();
                 onStageChange(task.id, e.target.value);
               }}
-              className="bg-slate-900/90 hover:bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] font-mono text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+              className="bg-surface-page/90 hover:bg-surface-page border border-slate-700 rounded px-1.5 py-0.5 text-[10px] font-mono text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary cursor-pointer"
               title="Move task to stage"
             >
               {stages.map((st) => (
@@ -184,43 +182,43 @@ export default function TaskCard({
               ))}
             </select>
           )}
-          <span className="text-[11px] font-mono text-slate-500">
+          <span className="text-[11px] font-mono text-text-muted">
             {task.id}
           </span>
         </div>
       </div>
 
       {/* Title & Description */}
-      <h3 className="text-sm font-medium text-slate-100 group-hover:text-indigo-300 transition-colors">
+      <h3 className="text-sm font-medium text-text-primary group-hover:text-brand-primary transition-colors">
         {task.title}
       </h3>
       {task.description && (
-        <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+        <p className="text-xs text-text-muted mt-1 line-clamp-2">
           {task.description}
         </p>
       )}
 
-      {/* M9 Prompt Context Indicator & Snippet */}
+      {/* Curated Prompt Context Indicator & Snippet */}
       {hasContext && (
-        <div className="mt-2.5 p-2 rounded-md bg-slate-900/75 border border-indigo-500/25">
+        <div className="mt-2.5 p-2 rounded-md bg-surface-page/75 border border-brand-primary/25">
           <div className="flex items-center justify-between gap-1.5 mb-1">
-            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-indigo-300 bg-indigo-500/15 px-1.5 py-0.5 rounded border border-indigo-500/30">
+            <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-brand-primary bg-brand-primary/15 px-1.5 py-0.5 rounded border border-brand-primary/30">
               <span>✦</span>
               <span>{task.contextTool || 'AI Context'}</span>
             </span>
             {updatedTimeLabel && (
-              <span className="text-[10px] font-mono text-slate-500 truncate">
+              <span className="text-[10px] font-mono text-text-muted truncate">
                 {updatedTimeLabel}
               </span>
             )}
           </div>
-          <p className="text-[11px] font-mono text-slate-300 line-clamp-2 leading-snug">
+          <p className="text-[11px] font-mono text-text-primary line-clamp-2 leading-snug">
             {task.context}
           </p>
         </div>
       )}
 
-      {/* M10 Copy as Prompt Context Button */}
+      {/* Copy as Prompt Context Button */}
       <div className="mt-2.5" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
@@ -228,21 +226,21 @@ export default function TaskCard({
           aria-label={`Copy prompt context for ${task.title}`}
           className={`w-full py-1.5 px-2.5 rounded-md text-[11px] font-mono font-medium border transition flex items-center justify-center gap-1.5 ${
             justCopied
-              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-              : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-indigo-200 border-indigo-500/30 hover:border-indigo-400/50'
+              ? 'bg-due-safe/20 text-due-safe border-due-safe/40'
+              : 'bg-brand-primary/10 hover:bg-brand-primary/20 text-brand-primary border-brand-primary/30 hover:border-brand-primary/50'
           }`}
           title="Serialize task + prompt context to Markdown and copy to clipboard"
         >
           {justCopied ? (
             <>
-              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-3.5 h-3.5 text-due-safe" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <span>Copied Prompt Context!</span>
             </>
           ) : (
             <>
-              <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg className="w-3.5 h-3.5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -257,12 +255,12 @@ export default function TaskCard({
       </div>
 
       {/* Footer: Assignee & Due Date */}
-      <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+      <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-text-muted">
         <div
           className="flex items-center gap-1.5"
           onClick={(e) => e.stopPropagation()}
         >
-          <span className="w-5 h-5 rounded-full bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-[10px] font-bold">
+          <span className="w-5 h-5 rounded-full bg-brand-primary/20 text-brand-primary flex items-center justify-center text-[10px] font-bold">
             {task.assignee ? task.assignee.charAt(0) : '?'}
           </span>
           <select
@@ -273,7 +271,7 @@ export default function TaskCard({
               onHandoff && onHandoff(task.id, e.target.value);
             }}
             onClick={(e) => e.stopPropagation()}
-            className="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 rounded px-1.5 py-0.5 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer max-w-[110px] truncate"
+            className="bg-surface-page/80 hover:bg-surface-page border border-slate-700/60 rounded px-1.5 py-0.5 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary cursor-pointer max-w-[110px] truncate"
             title="Hand off to teammate"
           >
             {team.map((member) => (

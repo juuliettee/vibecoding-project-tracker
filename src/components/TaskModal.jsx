@@ -31,15 +31,17 @@ export default function TaskModal({
   onCopyPrompt,
   task,
   team,
+  defaultAssignee,
   stages,
 }) {
   const isEditing = Boolean(task);
+  const fallbackAssignee = defaultAssignee || team[0] || 'Juliette';
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('feature');
   const [status, setStatus] = useState('todo');
-  const [assignee, setAssignee] = useState(team[0]);
+  const [assignee, setAssignee] = useState(fallbackAssignee);
   const [dueDate, setDueDate] = useState('');
   const [context, setContext] = useState('');
   const [contextTool, setContextTool] = useState('Cursor');
@@ -50,7 +52,7 @@ export default function TaskModal({
       setDescription(task.description || '');
       setType(task.type || 'feature');
       setStatus(task.status || 'todo');
-      setAssignee(task.assignee || team[0]);
+      setAssignee(task.assignee || fallbackAssignee);
       setDueDate(task.dueDate || '');
       setContext(task.context || '');
       setContextTool(task.contextTool || 'Cursor');
@@ -59,12 +61,12 @@ export default function TaskModal({
       setDescription('');
       setType('feature');
       setStatus('todo');
-      setAssignee(team[0]);
+      setAssignee(fallbackAssignee);
       setDueDate('');
       setContext('');
       setContextTool('Cursor');
     }
-  }, [task, team, isOpen]);
+  }, [task, fallbackAssignee, isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -155,7 +157,7 @@ export default function TaskModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-slate-100 flex flex-col max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-lg bg-surface-page border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-text-primary flex flex-col max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
@@ -164,7 +166,7 @@ export default function TaskModal({
             <span
               aria-hidden="true"
               className={`w-3 h-3 rounded-full ${
-                type === 'feature' ? 'bg-emerald-400' : 'bg-red-400'
+                type === 'feature' ? 'bg-type-feature' : 'bg-type-bug'
               }`}
             ></span>
             <h2
@@ -178,7 +180,7 @@ export default function TaskModal({
             type="button"
             onClick={onClose}
             aria-label="Close task modal"
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
+            className="text-text-muted hover:text-white p-1 rounded-lg hover:bg-surface-card transition"
           >
             <svg
               className="w-5 h-5"
@@ -203,9 +205,9 @@ export default function TaskModal({
           <div>
             <label
               htmlFor="task-title-input"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1"
+              className="block text-xs font-semibold uppercase tracking-wider text-text-primary mb-1"
             >
-              Task Title <span className="text-red-400">*</span>
+              Task Title <span className="text-type-bug">*</span>
             </label>
             <input
               id="task-title-input"
@@ -214,7 +216,7 @@ export default function TaskModal({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Scaffold authentication flow"
-              className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+              className="w-full bg-surface-card border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition"
             />
           </div>
 
@@ -222,7 +224,7 @@ export default function TaskModal({
           <div>
             <label
               htmlFor="task-desc-input"
-              className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1"
+              className="block text-xs font-semibold uppercase tracking-wider text-text-primary mb-1"
             >
               Description
             </label>
@@ -232,14 +234,14 @@ export default function TaskModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="What needs to be built or fixed?"
-              className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-none"
+              className="w-full bg-surface-card border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition resize-none"
             />
           </div>
 
           {/* Type & Status Row */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <span className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">
+              <span className="block text-xs font-semibold uppercase tracking-wider text-text-primary mb-1">
                 Type
               </span>
               <div className="flex gap-2" role="group" aria-label="Task Type">
@@ -249,8 +251,8 @@ export default function TaskModal({
                   onClick={() => setType('feature')}
                   className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border transition ${
                     type === 'feature'
-                      ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm'
-                      : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:bg-slate-800'
+                      ? 'bg-type-feature/20 text-type-feature border-type-feature/40 shadow-sm'
+                      : 'bg-surface-card/60 text-text-muted border-slate-700 hover:bg-surface-card'
                   }`}
                 >
                   Feature
@@ -261,8 +263,8 @@ export default function TaskModal({
                   onClick={() => setType('bug')}
                   className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-semibold border transition ${
                     type === 'bug'
-                      ? 'bg-red-500/20 text-red-300 border-red-500/40 shadow-sm'
-                      : 'bg-slate-800/60 text-slate-400 border-slate-700 hover:bg-slate-800'
+                      ? 'bg-type-bug/20 text-type-bug border-type-bug/40 shadow-sm'
+                      : 'bg-surface-card/60 text-text-muted border-slate-700 hover:bg-surface-card'
                   }`}
                 >
                   Bug
@@ -273,7 +275,7 @@ export default function TaskModal({
             <div>
               <label
                 htmlFor="task-status-select"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1"
+                className="block text-xs font-semibold uppercase tracking-wider text-text-primary mb-1"
               >
                 Stage / Status
               </label>
@@ -281,7 +283,7 @@ export default function TaskModal({
                 id="task-status-select"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                className="w-full bg-surface-card border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-primary transition"
               >
                 {stages.map((st) => (
                   <option key={st.id} value={st.id}>
@@ -297,7 +299,7 @@ export default function TaskModal({
             <div>
               <label
                 htmlFor="task-assignee-select"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1"
+                className="block text-xs font-semibold uppercase tracking-wider text-text-primary mb-1"
               >
                 Assignee
               </label>
@@ -305,7 +307,7 @@ export default function TaskModal({
                 id="task-assignee-select"
                 value={assignee}
                 onChange={(e) => setAssignee(e.target.value)}
-                className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                className="w-full bg-surface-card border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-primary transition"
               >
                 {team.map((member) => (
                   <option key={member} value={member}>
@@ -318,7 +320,7 @@ export default function TaskModal({
             <div>
               <label
                 htmlFor="task-duedate-input"
-                className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1"
+                className="block text-xs font-semibold uppercase tracking-wider text-text-primary mb-1"
               >
                 Due Date
               </label>
@@ -327,29 +329,29 @@ export default function TaskModal({
                 type="date"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full bg-slate-800/80 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition [color-scheme:dark]"
+                className="w-full bg-surface-card border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-brand-primary transition [color-scheme:dark]"
               />
             </div>
           </div>
 
-          {/* M9 & M10 Curated Prompt Context Section */}
-          <div className="p-3.5 rounded-xl bg-indigo-950/25 border border-indigo-500/30 space-y-2.5">
+          {/* Curated Prompt Context Section */}
+          <div className="p-3.5 rounded-xl bg-brand-primary/10 border border-brand-primary/30 space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span
                   aria-hidden="true"
-                  className="inline-flex items-center justify-center w-5 h-5 rounded bg-indigo-500/20 text-indigo-300 text-xs font-mono"
+                  className="inline-flex items-center justify-center w-5 h-5 rounded bg-brand-primary/20 text-brand-primary text-xs font-mono"
                 >
                   ✦
                 </span>
                 <div>
                   <label
                     htmlFor="task-context-textarea"
-                    className="block text-xs font-semibold uppercase tracking-wider text-indigo-300"
+                    className="block text-xs font-semibold uppercase tracking-wider text-brand-primary"
                   >
                     Curated Prompt Context
                   </label>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-text-muted">
                     Paste-ready AI briefing for the next prompt or teammate handoff
                   </p>
                 </div>
@@ -359,7 +361,7 @@ export default function TaskModal({
                 <button
                   type="button"
                   onClick={handleInsertTemplate}
-                  className="px-2 py-1 rounded text-[11px] font-mono bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                  className="px-2 py-1 rounded text-[11px] font-mono bg-surface-card hover:bg-slate-700 text-text-primary border border-slate-700 transition"
                   title="Insert structured prompt briefing template"
                 >
                   + Template
@@ -368,7 +370,7 @@ export default function TaskModal({
                   aria-label="Select AI Tool for Prompt Context"
                   value={contextTool}
                   onChange={(e) => setContextTool(e.target.value)}
-                  className="bg-slate-800 border border-indigo-500/40 rounded px-2 py-1 text-xs font-mono text-indigo-300 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                  className="bg-surface-card border border-brand-primary/40 rounded px-2 py-1 text-xs font-mono text-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   title="AI Tool used for this context"
                 >
                   {AI_TOOLS.map((tool) => (
@@ -386,10 +388,10 @@ export default function TaskModal({
               value={context}
               onChange={(e) => setContext(e.target.value)}
               placeholder="Curated briefing for the next AI / teammate (working prompts, architectural constraints, files to touch)..."
-              className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y leading-relaxed"
+              className="w-full bg-surface-page/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-text-primary placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent transition resize-y leading-relaxed"
             />
 
-            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-400 pt-0.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-text-muted pt-0.5">
               <span>
                 {context.trim()
                   ? `Tool: ${contextTool} · ${context.trim().length} chars`
@@ -402,10 +404,10 @@ export default function TaskModal({
                 <button
                   type="button"
                   onClick={handleCopyFromModal}
-                  className="px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 transition flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold bg-brand-primary/20 hover:bg-brand-primary/30 text-brand-primary border border-brand-primary/40 transition flex items-center gap-1"
                   title="Copy formatted Markdown prompt context to clipboard"
                 >
-                  <svg className="w-3.5 h-3.5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="w-3.5 h-3.5 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -425,7 +427,7 @@ export default function TaskModal({
               <button
                 type="button"
                 onClick={handleDelete}
-                className="px-3 py-2 rounded-lg text-xs font-semibold text-red-400 hover:text-red-300 hover:bg-red-500/10 border border-red-500/20 transition flex items-center gap-1.5"
+                className="px-3 py-2 rounded-lg text-xs font-semibold text-type-bug hover:opacity-90 hover:bg-type-bug/10 border border-type-bug/20 transition flex items-center gap-1.5"
               >
                 <svg
                   className="w-4 h-4"
@@ -451,13 +453,13 @@ export default function TaskModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+                className="px-4 py-2 rounded-lg text-xs font-semibold text-text-muted hover:text-white hover:bg-surface-card transition"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 hover:shadow-indigo-600/50 transition"
+                className="px-5 py-2 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-white shadow-md shadow-brand-primary/30 transition"
               >
                 {isEditing ? 'Save Changes' : '+ Add Task'}
               </button>

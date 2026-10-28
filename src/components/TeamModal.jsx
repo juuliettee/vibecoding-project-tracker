@@ -65,7 +65,7 @@ export default function TeamModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-slate-100 max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-lg bg-surface-page border border-slate-700/80 rounded-2xl shadow-2xl p-6 text-text-primary max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -77,7 +77,7 @@ export default function TeamModal({
             >
               Team Directory & Role Management
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-text-muted mt-0.5">
               Manage SWE team members, contact emails, and specialist roles
             </p>
           </div>
@@ -85,7 +85,7 @@ export default function TeamModal({
             type="button"
             onClick={onClose}
             aria-label="Close team management modal"
-            className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"
+            className="text-text-muted hover:text-white p-1 rounded-lg hover:bg-surface-card transition"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -96,10 +96,10 @@ export default function TeamModal({
         {/* Current Team Roster */}
         <div className="space-y-2.5 mb-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
               Active Project Team ({teamMembers.length})
             </h3>
-            <span className="text-[11px] font-mono text-slate-400">
+            <span className="text-[11px] font-mono text-text-muted">
               Single-Project Roster
             </span>
           </div>
@@ -112,10 +112,10 @@ export default function TeamModal({
               return (
                 <div
                   key={member.id || member.name}
-                  className="p-3 rounded-xl bg-slate-800/70 border border-slate-700/70 flex items-center justify-between gap-3"
+                  className="p-3 rounded-xl bg-surface-card/80 border border-slate-700/70 flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <span className="w-8 h-8 rounded-full bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 flex items-center justify-center text-xs font-bold shrink-0">
+                    <span className="w-8 h-8 rounded-full bg-brand-primary/20 border border-brand-primary/30 text-brand-primary flex items-center justify-center text-xs font-bold shrink-0">
                       {member.name.charAt(0)}
                     </span>
                     <div className="min-w-0">
@@ -123,13 +123,13 @@ export default function TeamModal({
                         <span className="text-sm font-medium text-white">
                           {member.name}
                         </span>
-                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-brand-primary/15 text-brand-primary border border-brand-primary/30">
                           {member.role}
                         </span>
                       </div>
                       <a
                         href={`mailto:${member.email}`}
-                        className="text-xs font-mono text-slate-400 hover:text-indigo-300 truncate block"
+                        className="text-xs font-mono text-text-muted hover:text-brand-primary truncate block"
                       >
                         {member.email}
                       </a>
@@ -137,7 +137,7 @@ export default function TeamModal({
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-slate-900 text-slate-300 border border-slate-700">
+                    <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-surface-page text-text-primary border border-slate-700">
                       {assignedCount} {assignedCount === 1 ? 'task' : 'tasks'}
                     </span>
                     {teamMembers.length > 1 && (
@@ -145,7 +145,7 @@ export default function TeamModal({
                         type="button"
                         onClick={() => onRemoveMember(member.name)}
                         aria-label={`Remove ${member.name} from team`}
-                        className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition"
+                        className="p-1 rounded text-slate-500 hover:text-type-bug hover:bg-type-bug/10 transition"
                         title="Remove member"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,9 +163,9 @@ export default function TeamModal({
         {/* Add New Team Member Form */}
         <form
           onSubmit={handleSubmit}
-          className="p-4 rounded-xl bg-slate-800/40 border border-slate-700/80 space-y-3"
+          className="p-4 rounded-xl bg-surface-card/50 border border-slate-700/80 space-y-3"
         >
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-indigo-300">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-primary">
             + Add New Team Member
           </h3>
 
@@ -173,9 +173,9 @@ export default function TeamModal({
             <div>
               <label
                 htmlFor="member-name-input"
-                className="block text-[11px] font-medium text-slate-300 mb-1"
+                className="block text-[11px] font-medium text-text-primary mb-1"
               >
-                Full Name <span className="text-red-400">*</span>
+                Full Name <span className="text-type-bug">*</span>
               </label>
               <input
                 id="member-name-input"
@@ -184,16 +184,16 @@ export default function TeamModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Jordan Taylor"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-surface-page border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary"
               />
             </div>
 
             <div>
               <label
                 htmlFor="member-email-input"
-                className="block text-[11px] font-medium text-slate-300 mb-1"
+                className="block text-[11px] font-medium text-text-primary mb-1"
               >
-                Contact Email <span className="text-red-400">*</span>
+                Contact Email <span className="text-type-bug">*</span>
               </label>
               <input
                 id="member-email-input"
@@ -201,8 +201,8 @@ export default function TeamModal({
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jordan@vibeflow.dev"
-                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder="jordan@example.com"
+                className="w-full bg-surface-page border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary"
               />
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function TeamModal({
           <div>
             <label
               htmlFor="member-role-select"
-              className="block text-[11px] font-medium text-slate-300 mb-1"
+              className="block text-[11px] font-medium text-text-primary mb-1"
             >
               Engineering / UX Role
             </label>
@@ -218,7 +218,7 @@ export default function TeamModal({
               id="member-role-select"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-surface-page border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-primary"
             >
               {SWE_ROLES.map((r) => (
                 <option key={r} value={r}>
@@ -228,12 +228,12 @@ export default function TeamModal({
             </select>
           </div>
 
-          {error && <p className="text-xs text-red-400">{error}</p>}
+          {error && <p className="text-xs text-type-bug">{error}</p>}
 
           <div className="flex justify-end pt-1">
             <button
               type="submit"
-              className="px-4 py-2 rounded-lg text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/25 transition"
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-brand-primary hover:opacity-90 text-white shadow-md shadow-brand-primary/25 transition"
             >
               + Add to Team
             </button>

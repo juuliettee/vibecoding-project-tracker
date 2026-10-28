@@ -1,6 +1,7 @@
-# Vibecoding Project Tracker — PRD
+# Vibecoding Project Tracker (VibeFlow) — Product Requirements Document
 
-**Status:** Finalized & Approved · Ready for development (`prd-done`).
+**Status:** Finalized & Implemented  
+**Author:** Juliette (Individual Coursework Submission — CM6312 Adopting Technologies)
 
 ---
 
@@ -8,76 +9,75 @@
 
 Vibecoding teams have two recurring pains with large projects:
 
-1. **They lose track of tasks.** Three teammates, a hundred small things, no shared view. Nothing tells them what state each task is actually in.
-2. **They lose track of prompts.** The AI gave them working code two days ago but no one remembers the prompt that produced it. When they need to iterate, they start from scratch.
+1. **They lose track of tasks.** Multiple teammates, dozens of small features and bugs, and no shared view of what state each task is actually in.
+2. **They lose track of prompts.** The AI assistant produced working code two days ago, but no one remembers the prompt or constraints that produced it. When teammates need to iterate, they start from scratch.
 
-A spreadsheet doesn't solve this. A real project tool (Linear, Jira, Notion) is overkill, doesn't know about prompts, and takes hours to set up.
+A spreadsheet doesn't solve this. A heavyweight project tool (Linear, Jira, Notion) is overkill, doesn't know about prompts, and takes hours to configure.
 
 ## 2. Target users
 
 - **Primary:** Software engineering team members across core disciplines (**Senior Developer**, **Junior Developer**, **Architect**, **UX Member**, **Database Creator**, **Software Engineer**) collaborating on a single-project vibecoding sprint.
-- **Secondary:** Future cohorts of vibecoders and academic evaluators reviewing prompt engineering history.
-
-We are designing the tool we ourselves will use. The pitch demo is also our first real user test.
+- **Secondary:** Academic evaluators and future cohorts reviewing prompt engineering workflows.
 
 ## 3. Product overview
 
-A single-page web app with two persistent surfaces plus an integrated Prompt History Studio:
+A single-page web application with two persistent surfaces and an integrated Prompt History Studio:
 
 - A **Kanban board** where vibecoding tasks move through four states (`To Do`, `In Progress`, `Review`, `Done`).
-- An **Anchor Board** above it that pins the four final-project deliverables (`Presentation`, `Demo`, `Report`, `Documentation`).
-- **M12 Secret Sauce & Client Elicitation Suite:**
-  - **Vibe Coding Prompt History Studio & Multi-Facet Filter Bar:** Centralizes all curated prompt briefings with one-click Markdown history export and instant filtering by search query, "My Tasks", assignee, task type, and AI tool.
-  - **Client-Side Workspace Sign-In & User Switcher:** Zero-barrier profile sign-in and user switching persisted in `localStorage` (satisfying multi-user session identification without requiring assessor registration).
-  - **Dynamic Team Directory:** Stores team member Name, Contact Email, and SWE Role, allowing teams to add new members dynamically.
-  - **Accessibility & Custom Accent Toolbar:** WCAG-oriented text size scaling (`100%`, `110%`, `120%`), High-Contrast border/label mode, full ARIA semantics, and user-definable brand accent colours.
-
-Each task carries the prompt context that produced it, so any teammate can click a button and copy the task + prompt history back into an AI chat to continue work.
+- An **Anchor Board** pinned above it for the four final-project deliverables (`Presentation`, `Demo`, `Report`, `Documentation`), initialized empty (`url: null`) so users can paste and pin deliverable URLs as they are produced.
+- **Extended Workflow & Accessibility Features:**
+  - **Vibe Coding Prompt History Studio & Multi-Facet Filter Bar:** Centralizes all curated prompt briefings with one-click Markdown history export and live filtering by search query, "My Tasks", assignee, task type, and AI tool.
+  - **Client-Side Demo Sign-In & Profile Switcher:** Presents a sign-in screen on initial load with one-click demo user profiles and an email + demo passcode (`2026`) form. *(Note: This is client-side demo authentication only, persisted in `localStorage`; a production deployment would require server-side authentication and hashed credentials.)*
+  - **Dynamic Team Directory:** Stores team member `Name`, `Contact Email`, and `Role`, allowing teams to add or remove members dynamically.
+  - **Accessibility & Custom Accent Toolbar:** WCAG-oriented text size scaling (`100%`, `110%`, `120%`), High-Contrast border and explicit status tag mode, semantic ARIA landmarks, and user-definable RGB brand accent colours.
 
 ## 4. Primary user flow
 
-1. Open the Webapp and select an active team profile (or switch users at any time via the header). The board loads from local storage.
-2. Click "+" to add a task. Fill in title, type, assignee, due date, prompt context.
-3. Move the task across columns as you work (via the modal or the quick stage selector directly on each card).
-4. When stuck, click "Copy as Prompt Context" on a task and paste it into Claude/ChatGPT/Cursor to continue.
-5. Hand off a task to a teammate with one dropdown, or add new team members via the Team Directory.
-6. Drop final deliverable links into the Anchor Board as you produce them, and export the full prompt log via the Prompt Studio.
+1. Open the web app and sign in via one-click demo profile selection or the email + demo passcode (`2026`) form.
+2. Click `+ Add Task` to create a task with title, description, type (`feature` or `bug`), stage, assignee, due date, and curated prompt context.
+3. Move tasks across columns as work progresses (via the task modal or the inline stage selector on each card).
+4. Click `Copy as Prompt Context` on any task to copy a structured Markdown briefing to the clipboard and paste it into Claude, ChatGPT, or Cursor.
+5. Hand off a task to another team member via the card assignee dropdown, or add new team members via the Team Directory.
+6. Paste final deliverable links into the Deliverable Anchor Board as they are produced, and export the project's full prompt log via the Prompt Studio.
 
 ## 5. Data model
-
-Locked core schema (extended with `TeamMember` and `AccessibilityPrefs` for M12):
 
 ```js
 // A single vibecoding task.
 Task = {
-  id: string,                    // uuid or timestamp string
+  id: string,                    // unique identifier
   title: string,
   description: string,
   type: 'feature' | 'bug',       // visual color coding
   status: 'todo' | 'in-progress' | 'review' | 'done',
-  assignee: string,              // team member name from §8 / Team Directory
+  assignee: string,              // team member name from Team Directory
   dueDate: string | null,        // ISO date 'YYYY-MM-DD'
   createdDate: string,           // ISO date 'YYYY-MM-DD'
-
-  // Added in later milestones:
-  context: string,               // M9 task-context — curated briefing for the next AI / teammate
-  contextTool: string | null,    // M9 task-context — 'Claude' | 'ChatGPT' | 'Cursor' | 'Lovable' | 'Replit' | 'Other'
-  contextUpdatedAt: string|null, // M9 task-context — ISO timestamp set automatically on save
+  context: string,               // curated briefing for the next AI / teammate
+  contextTool: string | null,    // 'Claude' | 'ChatGPT' | 'Cursor' | 'Lovable' | 'Replit' | 'Other'
+  contextUpdatedAt: string|null, // ISO timestamp set automatically on save
 }
 
-// One of four pinned deliverable slots.
+// One of four pinned deliverable slots (starts with url: null).
 Anchor = {
   id: 'presentation' | 'demo' | 'report' | 'documentation',
-  label: string,                 // human-readable
-  url: string | null,            // the link the team pastes in
+  label: string,                 // human-readable label
+  url: string | null,            // link pasted by the user
 }
 
-// Team member profile (M12 Client Q&A requirement).
+// Team member profile stored in localStorage.
 TeamMember = {
   id: string,
   name: string,
-  email: string,
+  email: string,                 // RFC 2606 @example.com demo addresses
   role: 'Senior Developer' | 'Junior Developer' | 'Architect' | 'UX Member' | 'Database Creator' | 'Software Engineer',
+}
+
+// Accessibility & appearance preferences stored in localStorage.
+AccessibilityPrefs = {
+  fontScale: 'normal' | 'large' | 'xlarge', // 100% | 110% | 120%
+  highContrast: boolean,
+  accent: 'indigo' | 'emerald' | 'violet' | 'cyan' | 'rose' | 'amber',
 }
 ```
 
@@ -85,13 +85,10 @@ TeamMember = {
 
 | Layer | Choice | Why |
 |---|---|---|
-| Framework | React (via Vite) | What the scaffold ships with. Don't migrate. |
-| Styling | Tailwind | Already configured. Use utility classes; no separate CSS files. |
-| State | React `useState` + a `useLocalStorage` hook | Simple, no library needed. |
-| Persistence | **localStorage** | Zero infra. Pick this. Do not switch to a backend mid-hackathon. |
-| Deploy | Vercel | One-click deploy from GitHub. |
-
-> **Decision:** localStorage, not a shared backend. Client-side session switching and team roster persistence run entirely in `localStorage`.
+| Framework | React 18 (via Vite) | Fast component rendering and modular state management. |
+| Styling | Tailwind CSS 3 + CSS RGB Variables | Utility-first styling with dynamic `--brand-primary` RGB alpha support. |
+| State & Persistence | React `useState` + `useLocalStorage` | Zero-latency client-side persistence across page reloads. |
+| Deploy | Vercel | Static SPA hosting accessible via public URL without registration. |
 
 ## 7. Stage names
 
@@ -102,72 +99,44 @@ Four columns, in this order, with these exact labels in the UI:
 3. **Review**
 4. **Done**
 
-## 8. Team
+## 8. Seeded team & demo user profiles
 
-Default core team seeded in `vibetracker.teamMembers` (extensible via the Team Directory modal):
+To allow evaluators to test multi-user sign-in, filtering, and task handoff in an individual submission, the app seeds three profiles using RFC 2606 reserved `@example.com` addresses (`Alex Chen` and `Sam Rivera` are demo user profiles):
 
-| Slot | Name | Contact Email | Role | GitHub handle |
-|---|---|---|---|---|
-| Teammate A | Juliette | ortegagutamajv@cardiff.ac.uk | Senior Developer | juuliettee |
-| Teammate B | Alex Chen | alex.chen@vibeflow.dev | UX Member | alexchen |
-| Teammate C | Sam Rivera | sam.rivera@vibeflow.dev | Architect | samrivera |
+| Profile Type | Name | Contact Email | Role |
+|---|---|---|---|
+| Author / Developer | Juliette | `juliette@example.com` | Senior Developer |
+| Demo User Profile | Alex Chen | `alex.chen@example.com` | UX Member |
+| Demo User Profile | Sam Rivera | `sam.rivera@example.com` | Architect |
 
-## 9. Milestone ownership
+## 9. Milestone implementation record
 
-Fill in the owner column. Recommended default in **bold**; change if your team has different strengths.
+All milestones were designed and implemented by **Juliette** (individual coursework submission):
 
-| # | Tag | Title | Suggested owner | Final owner |
-|---|---|---|---|---|
-| 3 | `design-done` | Design system + voice (DESIGN.md) | **B** | Alex Chen |
-| 4 | `data-model` | Task model + board view | **A** | Juliette |
-| 5 | `crud-modal` | Add / edit / delete modal | **A** | Juliette |
-| 6 | `tag-style` | Feature / bug colors | **B** | Alex Chen |
-| 7 | `task-owner` | Owner indicator + handoff | **A** | Juliette |
-| 8 | `due-tint` | Due-date color tinting | **B** | Alex Chen |
-| 9 | `task-context` | Context field on the task modal | **C** | Sam Rivera |
-| 10 | `copy-context` | "Copy as Prompt Context" button | **C** | Sam Rivera |
-| 11 | `project-deliverables` | Deliverable Anchor Board | **B** | Alex Chen |
-| 12 | `secret-sauce` | Prompt History Studio, Team/Auth & Accessibility | **C / All** | Juliette / All |
-| 13 | `pitch-done` | Demo + pitch rehearsal | **All** | All |
+| # | Tag | Milestone Description | Implemented By |
+|---|---|---|---|
+| 1 | `git-linked` | Repository & webhook configuration | Juliette |
+| 2 | `prd-done` | Product Requirements Document | Juliette |
+| 3 | `design-done` | Design system & Tailwind token configuration | Juliette |
+| 4 | `data-model` | Task data model & 4-column Kanban board | Juliette |
+| 5 | `crud-modal` | Add / edit / delete task modal with `localStorage` | Juliette |
+| 6 | `tag-style` | Feature vs. bug visual distinction | Juliette |
+| 7 | `task-owner` | Assignee badge, handoff dropdown & toast | Juliette |
+| 8 | `due-tint` | Deadline urgency badge & card surface tinting | Juliette |
+| 9 | `task-context` | Curated Prompt Context field, AI tool & timestamp | Juliette |
+| 10 | `copy-context` | "Copy as Prompt Context" Markdown serializer | Juliette |
+| 11 | `project-deliverables` | Deliverable Anchor Board above Kanban | Juliette |
+| 12 | `secret-sauce` | Prompt Studio, filters, demo sign-in, team directory & accessibility | Juliette |
+| 13 | `pitch-done` | Final demo dataset, documentation & deployment | Juliette |
 
-## 10. AI / vibe coding angle
+## 10. Team / product identity
 
-Where AI will be heavily used:
-- M4, M5: scaffold the board and the modal from a single prompt each.
-- M9, M10: write the Markdown serialization helper for the Context field.
-- M7: animation polish for the handoff toast.
+- **Product name:** VibeFlow
+- **Tagline:** The project tracker that remembers the prompts that built it.
 
-Where AI will **not** save you time:
-- M2 (this PRD review) — read it yourself.
-- M3 (DESIGN.md) — design taste is yours, not the model's.
-- M12 (secret-sauce) — the whole point is that AI can't predict it.
-- M13 (pitch) — write the script in your own voice.
+## 11. Out of scope
 
-Keep the Context field of each real task up to date as you work. By the end of the hackathon you should have a handful of curated context blocks — those become part of your Module 5 "Vibe Coding History" deliverable.
-
-## 11. Team identity
-
-Fill in:
-
-- **Team name:** VibeFlow
-- **Tagline (one sentence):** The project tracker that remembers the prompts that built it.
-- **Tracker URL after deploy:** https://vibecoding-project-tracker-juuliettee.vercel.app
-
-## 12. Out of scope (do not build)
-
-- External cloud database / server-side authentication backend (all auth/session switching is client-side via `localStorage`).
-- Real GitHub API OAuth integration.
-- Multi-project / multi-organization workspaces (scoped strictly to one project for one team first).
+- Server-side authentication or cloud database backend (authentication is client-side demo sign-in only).
+- Real GitHub OAuth / webhook ingestion inside the client app.
+- Multi-project or multi-team workspaces (intentionally scoped to one project for one team).
 - Real-time WebSocket collaboration.
-
-## 13. Definition of done
-
-The hackathon is "done" when all 13 milestone tags are pushed to your repo and visible on the dashboard. The pitch is "done" when:
-
-- The board loads on Vercel without errors.
-- The "Copy as Prompt Context" demo works on stage.
-- 5 min pitch is rehearsed.
-
----
-
-*PRD version: hackathon-starter v1 · maintained by Prof. Dr. Ignacio Alvarez & Team VibeFlow*

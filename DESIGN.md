@@ -1,91 +1,80 @@
-# Vibecoding Project Tracker — Design
+# Vibecoding Project Tracker (VibeFlow) — Design System
 
-**Status:** Completed design doc · Tag: `design-done`.
-
-**Why this file exists.** This tracker is your tool. It should look like *your* tool — not a generic Kanban with default Tailwind blue. Twenty minutes of design decisions here will be visible on every screen for the next six weeks of Module 5.
-
-**Who owns this.** Person B (Alex Chen), during the same window the rest of the team is reviewing the PRD. By the time the team converges to start M4 (`data-model`), this file should be filled in and the colors should already be in `tailwind.config.js`.
+**Status:** Completed design specification (`design-done`)  
+**Author:** Juliette (Individual Coursework Submission — CM6312 Adopting Technologies)
 
 ---
 
 ## 1. Mood / vibe
 
-One sentence that captures the feeling the tracker should leave you with:
+*Fast, focused, and high-contrast — a dark-slate workspace inspired by Linear and Raycast, designed to reduce eye strain and keep prompt context visible during long AI pair-programming sessions.*
 
-*Fast, focused, and electric — feels like an Obsidian canvas crossed with Linear, engineered specifically for high-velocity AI pair programming.*
+Visual references:
 
-Two or three references that capture the vibe:
+- **Linear:** High-density dark slate surfaces (`#0f172a` / `#1e293b`) and clear card hierarchy.
+- **Raycast:** Monospace metadata badges (`JetBrains Mono`), subtle 1px borders, and keyboard-friendly modals.
+- **Vercel Dashboard:** High-contrast status indicators and restrained visual noise.
 
-- Linear.app's sleek dark slate palette and high-density card ergonomics
-- Raycast's crisp monospace badges, subtle borders, and keyboard-first simplicity
-- Vercel dashboard's minimalist contrast and information clarity
+Anti-references — what we explicitly avoid:
 
-Anti-references — what we are explicitly **not** trying to look like:
+- Cluttered enterprise boards with nested sub-menus and low-contrast grey-on-grey text.
+- Unstyled default templates with inconsistent spacing.
 
-- Cluttered, sluggish corporate Jira enterprise boards with 50 dropdown filters
-- Generic, default Bootstrap blue templates with rounded bubble corners
+## 2. Color palette & Tailwind tokens
 
-## 2. Color palette
+Defined in `tailwind.config.js` and `src/index.css`. Brand tokens use RGB CSS variables (`--brand-primary`, `--brand-accent`) so Tailwind opacity modifiers (such as `bg-brand-primary/20` and `border-brand-primary/40`) work dynamically across all user-selected accent themes.
 
-These are the colors the build milestones will reference. Once chosen, paste the hex values into `tailwind.config.js` so the rest of the team can use Tailwind utility classes (e.g. `bg-brand-primary`, `border-due-warning`).
+### Brand & Surface tokens
 
-### Brand (with M12 User-Definable Accent Support)
-
-| Token | Hex | Where it shows up |
+| Token | Default Hex / RGB | Where it shows up |
 |---|---|---|
-| `brand-primary` | `#6366f1` | Default primary brand accent (user-customizable in M12 Accessibility Menu: Indigo, Emerald, Violet, Cyan, Rose, Amber) |
-| `brand-accent` | `#8b5cf6` | Highlights, hover states, badges, prompt actions |
-| `surface-page` | `#0f172a` | Page background (deep dark slate) |
-| `surface-card` | `#1e293b` | Card background, modals, dropdown menus |
-| `text-primary` | `#f8fafc` | Primary titles, body text, card headers |
-| `text-muted` | `#94a3b8` | Captions, dates, metadata counts, secondary badges |
+| `brand-primary` | `#6366f1` (`99 102 241`) | Primary buttons, active filter pills, focus rings, prompt badges (user-configurable in Accessibility Menu) |
+| `brand-accent` | `#8b5cf6` (`139 92 246`) | Wordmark gradient, secondary highlights, report deliverable icon |
+| `surface-page` | `#0f172a` | Main page background and modal surfaces |
+| `surface-card` | `#1e293b` | Task cards, inputs, dropdowns, and toast background |
+| `text-primary` | `#f8fafc` | Primary headings, card titles, and body copy |
+| `text-muted` | `#94a3b8` | Secondary captions, timestamps, and column counts |
 
-### Task type (M6 `tag-style`)
+### Task type tokens (`tag-style`)
 
 | Token | Hex | When used |
 |---|---|---|
-| `type-feature` | `#10b981` | Cards tagged `feature` (accent emerald stripe + icon) |
-| `type-bug` | `#ef4444` | Cards tagged `bug` (accent crimson stripe + icon) |
+| `type-feature` | `#10b981` | Cards tagged `feature` (4px left emerald border + bolt badge) |
+| `type-bug` | `#ef4444` | Cards tagged `bug` (4px left crimson border + warning badge) |
 
-### Due-date states (M8 `due-tint`)
+### Due-date urgency tokens (`due-tint`)
 
 | Token | Hex | When used |
 |---|---|---|
-| `due-safe` | `#10b981` | More than 2 days out |
-| `due-warning` | `#f59e0b` | Less than 24 hours |
-| `due-overdue` | `#ef4444` | Past due |
-| `due-neutral` | `#64748b` | Done (overrides date) |
+| `due-safe` | `#10b981` | More than 1 day remaining |
+| `due-warning` | `#f59e0b` | Due today or tomorrow (within 24–48 hours) |
+| `due-overdue` | `#ef4444` | Past due date |
+| `due-neutral` | `#64748b` | Task is in `Done` stage (overrides due date) or has no due date |
 
-## 3. Typography & Accessibility (`!!`)
+## 3. Typography & Accessibility
 
-| Role | Font | Why |
+Loaded via Google Fonts in `index.html` and configured in `tailwind.config.js`:
+
+| Role | Font Family | Why |
 |---|---|---|
-| Heading | `Inter, ui-sans-serif, system-ui` | Geometric clarity and modern crispness across headers |
-| Body | `Inter, ui-sans-serif, system-ui` | High legibility at 13px–15px in dense card layouts |
-| Monospace (tags, badges, code) | `JetBrains Mono, ui-monospace, monospace` | Technical feel for prompt context, git hashes, and timestamps |
+| Heading & Body (`font-sans`) | `Inter, ui-sans-serif, system-ui, sans-serif` | High x-height and legibility at compact 12px–14px card sizes |
+| Monospace (`font-mono`) | `JetBrains Mono, ui-monospace, monospace` | Clear visual separation for prompt context blocks, task IDs, emails, and dates |
 
-Suggested sizes & Accessibility Scaling:
+Accessibility & customisation support:
 
-- Page title: 24 px / semibold
-- Section header: 16 px / semibold uppercase
-- Card title: 14 px / medium
-- Body: 14 px / regular
-- Caption: 12 px / regular muted
-- **Accessibility Scaling (M12):** Supports live root font scaling (`100%`, `110%`, `120%`), High-Contrast border and explicit status tag mode (`[OVERDUE]`, `[WARNING]`, `[SAFE]`), semantic ARIA landmarks (`role="dialog"`, `aria-modal="true"`, `aria-live="polite"`), and keyboard navigation (`Tab`, `Enter`, `Escape`).
+- **Root Text Size Scaling:** Toggle between `100%` (`normal`), `110%` (`large`), and `120%` (`xlarge`) root font sizes via the Accessibility Menu.
+- **High-Contrast Mode:** Upgrades card outlines to 2px high-contrast borders and appends explicit text status tags (`[OVERDUE]`, `[WARNING]`, `[SAFE]`) to due dates so urgency is never communicated by colour alone.
+- **User-Definable Accent Colours:** Supports 6 RGB themes (`Indigo`, `Emerald`, `Violet`, `Cyan`, `Rose`, `Amber`).
+- **Keyboard & Screen Reader Semantics:** All modals implement `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and `Escape` key dismissal; toast notifications use `role="status"` and `aria-live="polite"`.
 
 ## 4. Component principles
 
-One short sentence per element. These set the tone for the build phase — Person A's modal and Person B's anchor board should both feel like they came from this doc.
-
-- **Cards:** Clean dark slate tiles with 1px border, subtle left type stripe, deadline surface tint, prompt snippet preview, and immediate readable metadata.
-- **Buttons:** Solid tactile fills with slight hover brightness, smooth 150ms transitions, and unmistakable active focus rings.
-- **Modal:** Centered slate-900 modal with 1px border, frosted dark backdrop overlay, and explicit keyboard/escape dismiss.
-- **Empty states:** Dashed slate-800 border with warm, motivating copy — never sterile or discouraging.
-- **Stage movement affordance:** Crisp stage selector directly on each card header plus full modal status control for rapid, deterministic state changes.
+- **Cards:** `surface-card` tiles with a 4px left type stripe (`type-feature` or `type-bug`), deadline urgency border/surface tint, monospace prompt context preview, inline stage selector, and one-click prompt copy.
+- **Buttons:** Solid `brand-primary` fills for primary actions and subtle `brand-primary/15` tinted buttons for secondary prompt actions.
+- **Modals:** Centered `surface-page` dialog over a frosted `slate-950/75` backdrop with `200ms` `animate-fadeIn` transition.
+- **Empty states:** Dashed border containers with clear, actionable prompts (`No tasks here — ready for the next prompt.` and `+ Paste {Label} Link`).
 
 ## 5. Voice / microcopy
-
-Three lines of microcopy that capture the tone of the product. Keep it short — these are the words a stressed user reads at 11pm.
 
 | Where | Text |
 |---|---|
@@ -93,15 +82,9 @@ Three lines of microcopy that capture the tone of the product. Keep it short —
 | Empty column placeholder | `No tasks here — ready for the next prompt.` |
 | Toast after "Copy as Prompt Context" | `Prompt briefing copied! Paste into Claude/ChatGPT/Cursor.` |
 | Confirm-delete message | `Delete this vibecoding task? You cannot undo this action.` |
-| Handoff toast (M7 `task-owner`) | `Handed off to {name}. They've got it!` |
+| Handoff toast (`task-owner`) | `Handed off to {name}. They've got it!` |
 
-## 6. Logo / wordmark
-
-The tracker probably doesn't need a logo, but it does need a name and a wordmark style.
+## 6. Wordmark
 
 - **Product name:** `VibeFlow`
-- **Wordmark style:** `VibeFlow` with `Vibe` in bold white and `Flow` in a dynamic user-definable accent-to-purple gradient.
-
----
-
-*DESIGN.md version: hackathon-starter v1 · Completed by Alex Chen (Person B) & Team VibeFlow*
+- **Wordmark style:** `Vibe` in bold white and `Flow` in a `from-brand-primary to-brand-accent` gradient (`bg-clip-text text-transparent`).

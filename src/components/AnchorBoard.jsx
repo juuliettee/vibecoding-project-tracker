@@ -4,7 +4,7 @@ const ANCHOR_META = {
   presentation: {
     subtitle: 'Final pitch deck & slides',
     icon: (
-      <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4 text-brand-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -15,9 +15,9 @@ const ANCHOR_META = {
     ),
   },
   demo: {
-    subtitle: 'Live deployed Vercel URL',
+    subtitle: 'Live deployed application URL',
     icon: (
-      <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4 text-type-feature" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -36,7 +36,7 @@ const ANCHOR_META = {
   report: {
     subtitle: 'Requirements & UX report',
     icon: (
-      <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4 text-brand-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -47,9 +47,9 @@ const ANCHOR_META = {
     ),
   },
   documentation: {
-    subtitle: 'PRD, Design System & Repo',
+    subtitle: 'System & design documentation',
     icon: (
-      <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg className="w-4 h-4 text-due-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -95,27 +95,27 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
   return (
     <section
       aria-label="Deliverable Anchor Board"
-      className="mb-6 rounded-xl bg-slate-900/80 border border-slate-800 p-4 shadow-sm"
+      className="mb-6 rounded-xl bg-surface-page/80 border border-slate-800 p-4 shadow-sm"
     >
       {/* Anchor Board Header */}
       <div className="flex flex-wrap items-center justify-between gap-2 pb-3 mb-3 border-b border-slate-800/80">
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 text-xs font-mono">
+          <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-brand-primary/15 text-brand-primary border border-brand-primary/30 text-xs font-mono">
             ⚓
           </span>
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-200">
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-primary">
             Deliverable Anchor Board
           </h2>
-          <span className="text-xs text-slate-500 hidden sm:inline">
-            · Pinned final-project deliverables
+          <span className="text-xs text-text-muted hidden sm:inline">
+            · Pin final-project deliverable links as you produce them
           </span>
         </div>
 
         <span
           className={`px-2 py-0.5 rounded-full text-[11px] font-mono border ${
             linkedCount === anchors.length
-              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-              : 'bg-slate-800 text-slate-400 border-slate-700/60'
+              ? 'bg-due-safe/10 text-due-safe border-due-safe/30'
+              : 'bg-surface-card text-text-muted border-slate-700/60'
           }`}
         >
           {linkedCount}/{anchors.length} Linked
@@ -137,21 +137,21 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
               key={anchor.id}
               className={`rounded-lg p-3 border transition flex flex-col justify-between gap-2.5 ${
                 hasUrl
-                  ? 'bg-slate-800/75 border-slate-700/80 hover:border-indigo-500/40'
-                  : 'bg-slate-900/50 border-dashed border-slate-800 hover:border-slate-700'
+                  ? 'bg-surface-card/75 border-slate-700/80 hover:border-brand-primary/40'
+                  : 'bg-surface-page/50 border-dashed border-slate-800 hover:border-slate-700'
               }`}
             >
               {/* Top Row: Icon, Title, Status Badge */}
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className="p-1.5 rounded-md bg-slate-900 border border-slate-700/70 shrink-0">
+                  <div className="p-1.5 rounded-md bg-surface-page border border-slate-700/70 shrink-0">
                     {meta.icon}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="text-xs font-semibold text-slate-100 truncate">
+                    <h3 className="text-xs font-semibold text-text-primary truncate">
                       {anchor.label}
                     </h3>
-                    <p className="text-[11px] text-slate-400 truncate">
+                    <p className="text-[11px] text-text-muted truncate">
                       {meta.subtitle}
                     </p>
                   </div>
@@ -160,13 +160,13 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                 <span
                   className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-mono uppercase shrink-0 border ${
                     hasUrl
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                      : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                      ? 'bg-due-safe/10 text-due-safe border-due-safe/30'
+                      : 'bg-surface-card text-text-muted border-slate-700'
                   }`}
                 >
                   <span
                     className={`w-1.5 h-1.5 rounded-full ${
-                      hasUrl ? 'bg-emerald-400' : 'bg-amber-400'
+                      hasUrl ? 'bg-due-safe' : 'bg-due-neutral'
                     }`}
                   ></span>
                   {hasUrl ? 'Pinned' : 'Empty'}
@@ -179,21 +179,22 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                   <input
                     type="text"
                     autoFocus
+                    aria-label={`URL for ${anchor.label}`}
                     value={draftUrl}
                     onChange={(e) => setDraftUrl(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleSave(anchor.id);
                       if (e.key === 'Escape') setEditingId(null);
                     }}
-                    placeholder="https://..."
-                    className="w-full bg-slate-900 border border-indigo-500/60 rounded px-2 py-1 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-indigo-400"
+                    placeholder="https://example.com/deliverable"
+                    className="w-full bg-surface-page border border-brand-primary/60 rounded px-2 py-1 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   <div className="flex items-center justify-between gap-1.5">
                     {hasUrl ? (
                       <button
                         type="button"
                         onClick={() => handleClear(anchor.id)}
-                        className="px-2 py-1 rounded text-[10px] font-mono text-red-400 hover:bg-red-500/10 border border-red-500/20 transition"
+                        className="px-2 py-1 rounded text-[10px] font-mono text-type-bug hover:bg-type-bug/10 border border-type-bug/20 transition"
                       >
                         Unpin
                       </button>
@@ -204,14 +205,14 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                       <button
                         type="button"
                         onClick={() => setEditingId(null)}
-                        className="px-2 py-1 rounded text-[10px] font-mono text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+                        className="px-2 py-1 rounded text-[10px] font-mono text-text-muted hover:text-white hover:bg-surface-card transition"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={() => handleSave(anchor.id)}
-                        className="px-2.5 py-1 rounded text-[10px] font-mono font-semibold bg-indigo-600 hover:bg-indigo-500 text-white transition"
+                        className="px-2.5 py-1 rounded text-[10px] font-mono font-semibold bg-brand-primary hover:opacity-90 text-white transition"
                       >
                         Save Link
                       </button>
@@ -224,7 +225,7 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                     href={anchor.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[11px] font-mono text-indigo-300 hover:text-indigo-200 truncate underline decoration-indigo-500/40 underline-offset-2 flex items-center gap-1 min-w-0"
+                    className="text-[11px] font-mono text-brand-primary hover:opacity-80 truncate underline decoration-brand-primary/40 underline-offset-2 flex items-center gap-1 min-w-0"
                     title={anchor.url}
                   >
                     <span className="truncate">
@@ -235,7 +236,7 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                   <button
                     type="button"
                     onClick={() => handleStartEdit(anchor)}
-                    className="px-2 py-0.5 rounded text-[10px] font-mono text-slate-300 hover:text-white bg-slate-900/80 hover:bg-slate-700 border border-slate-700 transition shrink-0"
+                    className="px-2 py-0.5 rounded text-[10px] font-mono text-text-primary hover:text-white bg-surface-page/80 hover:bg-slate-700 border border-slate-700 transition shrink-0"
                   >
                     Edit
                   </button>
@@ -245,7 +246,7 @@ export default function AnchorBoard({ anchors, onUpdateAnchor }) {
                   <button
                     type="button"
                     onClick={() => handleStartEdit(anchor)}
-                    className="w-full py-1 px-2 rounded text-[11px] font-mono text-slate-400 hover:text-indigo-300 bg-slate-900/60 hover:bg-indigo-500/10 border border-slate-800 hover:border-indigo-500/30 transition flex items-center justify-center gap-1"
+                    className="w-full py-1 px-2 rounded text-[11px] font-mono text-text-muted hover:text-brand-primary bg-surface-page/60 hover:bg-brand-primary/10 border border-slate-800 hover:border-brand-primary/30 transition flex items-center justify-center gap-1"
                   >
                     <span>+ Paste {anchor.label} Link</span>
                   </button>

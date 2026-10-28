@@ -16,15 +16,15 @@ export default function Toast({ message, onClose }) {
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-slate-800 text-white border border-indigo-500/40 rounded-xl shadow-2xl shadow-indigo-950/50 text-xs font-medium transition-all duration-200 animate-slideUp"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-surface-card text-text-primary border border-brand-primary/40 rounded-xl shadow-2xl text-xs font-medium transition-all duration-200 animate-slideUp"
     >
-      <span className="flex h-2 w-2 rounded-full bg-indigo-400 animate-pulse"></span>
-      <p className="text-slate-100">{message}</p>
+      <span className="flex h-2 w-2 rounded-full bg-brand-primary animate-pulse"></span>
+      <p className="text-text-primary">{message}</p>
       <button
         type="button"
         onClick={onClose}
         aria-label="Dismiss notification"
-        className="ml-2 text-slate-400 hover:text-white p-0.5 rounded transition"
+        className="ml-2 text-text-muted hover:text-white p-0.5 rounded transition"
       >
         <svg
           className="w-3.5 h-3.5"
