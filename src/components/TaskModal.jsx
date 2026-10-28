@@ -28,6 +28,7 @@ export default function TaskModal({
   onClose,
   onSave,
   onDelete,
+  onCopyPrompt,
   task,
   team,
   stages,
@@ -83,6 +84,22 @@ export default function TaskModal({
     } else {
       setContext((prev) => `${prev.trim()}\n\n${BRIEFING_TEMPLATE}`);
     }
+  };
+
+  const handleCopyFromModal = () => {
+    if (!onCopyPrompt) return;
+    onCopyPrompt({
+      id: task?.id || 'draft-task',
+      title: title.trim() || 'Untitled Task',
+      description: description.trim(),
+      type,
+      status,
+      assignee,
+      dueDate: dueDate || null,
+      context: context.trim(),
+      contextTool: context.trim() ? contextTool : null,
+      contextUpdatedAt: task?.contextUpdatedAt || new Date().toISOString(),
+    });
   };
 
   const handleSubmit = (e) => {
@@ -284,7 +301,7 @@ export default function TaskModal({
             </div>
           </div>
 
-          {/* M9 Curated Prompt Context Section */}
+          {/* M9 & M10 Curated Prompt Context Section */}
           <div className="p-3.5 rounded-xl bg-indigo-950/25 border border-indigo-500/30 space-y-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
@@ -333,19 +350,33 @@ export default function TaskModal({
               className="w-full bg-slate-900/90 border border-slate-700/80 rounded-lg px-3 py-2 text-xs font-mono text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition resize-y leading-relaxed"
             />
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 pt-0.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono text-slate-400 pt-0.5">
               <span>
                 {context.trim()
                   ? `Tool: ${contextTool} · ${context.trim().length} chars`
                   : 'No prompt context recorded yet'}
               </span>
-              <span>
-                {formattedUpdatedAt
-                  ? `Last saved: ${formattedUpdatedAt}`
-                  : context.trim()
-                  ? 'Timestamped on save'
-                  : ''}
-              </span>
+              <div className="flex items-center gap-2">
+                {formattedUpdatedAt && (
+                  <span>Last saved: {formattedUpdatedAt}</span>
+                )}
+                <button
+                  type="button"
+                  onClick={handleCopyFromModal}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-mono font-semibold bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-200 border border-indigo-500/40 transition flex items-center gap-1"
+                  title="Copy formatted Markdown prompt context to clipboard"
+                >
+                  <svg className="w-3.5 h-3.5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Copy as Prompt Context
+                </button>
+              </div>
             </div>
           </div>
 

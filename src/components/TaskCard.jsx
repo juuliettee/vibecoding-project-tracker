@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatContextTimestamp } from './TaskModal.jsx';
 
 const DEFAULT_TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
@@ -63,13 +63,30 @@ export function getDueDateCardTint(status) {
   }
 }
 
-export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff }) {
+export default function TaskCard({
+  task,
+  onClick,
+  team = DEFAULT_TEAM,
+  onHandoff,
+  onCopyPrompt,
+}) {
+  const [justCopied, setJustCopied] = useState(false);
+
   const isFeature = task.type === 'feature';
   const dueDateStatus = getDueDateStatus(task);
   const badgeStyles = getDueDateBadgeStyles(dueDateStatus);
   const cardTintStyles = getDueDateCardTint(dueDateStatus);
   const hasContext = Boolean(task.context && task.context.trim());
   const updatedTimeLabel = formatContextTimestamp(task.contextUpdatedAt);
+
+  const handleCopyClick = (e) => {
+    e.stopPropagation();
+    if (onCopyPrompt) {
+      onCopyPrompt(task);
+    }
+    setJustCopied(true);
+    setTimeout(() => setJustCopied(false), 1800);
+  };
 
   return (
     <div
@@ -148,6 +165,41 @@ export default function TaskCard({ task, onClick, team = DEFAULT_TEAM, onHandoff
           </p>
         </div>
       )}
+
+      {/* M10 Copy as Prompt Context Button */}
+      <div className="mt-2.5" onClick={(e) => e.stopPropagation()}>
+        <button
+          type="button"
+          onClick={handleCopyClick}
+          className={`w-full py-1.5 px-2.5 rounded-md text-[11px] font-mono font-medium border transition flex items-center justify-center gap-1.5 ${
+            justCopied
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
+              : 'bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 hover:text-indigo-200 border-indigo-500/30 hover:border-indigo-400/50'
+          }`}
+          title="Serialize task + prompt context to Markdown and copy to clipboard"
+        >
+          {justCopied ? (
+            <>
+              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Copied Prompt Context!</span>
+            </>
+          ) : (
+            <>
+              <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+              <span>Copy as Prompt Context</span>
+            </>
+          )}
+        </button>
+      </div>
 
       {/* Footer: Assignee & Due Date */}
       <div className="mt-3 pt-3 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">

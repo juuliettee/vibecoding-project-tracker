@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import TaskModal from './components/TaskModal.jsx';
 import TaskCard from './components/TaskCard.jsx';
 import Toast from './components/Toast.jsx';
+import { serializeTaskPrompt, copyTextToClipboard } from './utils/promptSerializer.js';
 
 /**
  * Vibecoding Project Tracker — VibeFlow
@@ -152,6 +153,13 @@ export default function App() {
     setToastMessage(`Handed off to ${newAssignee}. They've got it!`);
   };
 
+  const handleCopyPromptContext = async (task) => {
+    const markdownPrompt = serializeTaskPrompt(task);
+    await copyTextToClipboard(markdownPrompt);
+    // Exact microcopy from DESIGN.md §5:
+    setToastMessage('Prompt briefing copied! Paste into Claude/ChatGPT/Cursor.');
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col">
       {/* App Header */}
@@ -163,7 +171,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
             </h1>
             <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v0.9 · context
+              v1.0 · copy-context
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
@@ -234,6 +242,7 @@ export default function App() {
                       team={TEAM}
                       onClick={() => handleOpenEditModal(task)}
                       onHandoff={handleHandoffTask}
+                      onCopyPrompt={handleCopyPromptContext}
                     />
                   ))
                 )}
@@ -249,6 +258,7 @@ export default function App() {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
+        onCopyPrompt={handleCopyPromptContext}
         task={editingTask}
         team={TEAM}
         stages={STAGES}
