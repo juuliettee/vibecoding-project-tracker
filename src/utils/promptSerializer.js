@@ -9,7 +9,7 @@ const STAGE_LABELS = {
 
 /**
  * Serializes a Vibecoding Task + Curated Prompt Context into a structured,
- * paste-ready Markdown briefing for Claude, ChatGPT, Cursor, or other AI tools (M10).
+ * paste-ready Markdown briefing for Claude, ChatGPT, Cursor, or other AI tools.
  */
 export function serializeTaskPrompt(task) {
   if (!task) return '';

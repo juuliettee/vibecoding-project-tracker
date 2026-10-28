@@ -9,13 +9,6 @@ export const ACCENT_THEMES = [
     accentRgb: '139 92 246',
   },
   {
-    id: 'emerald',
-    label: 'Emerald',
-    hex: '#10b981',
-    rgb: '16 185 129',
-    accentRgb: '52 211 153',
-  },
-  {
     id: 'violet',
     label: 'Violet',
     hex: '#8b5cf6',
@@ -28,20 +21,6 @@ export const ACCENT_THEMES = [
     hex: '#06b6d4',
     rgb: '6 182 212',
     accentRgb: '34 211 238',
-  },
-  {
-    id: 'rose',
-    label: 'Rose',
-    hex: '#f43f5e',
-    rgb: '244 63 94',
-    accentRgb: '251 113 133',
-  },
-  {
-    id: 'amber',
-    label: 'Amber',
-    hex: '#f59e0b',
-    rgb: '245 158 11',
-    accentRgb: '251 191 36',
   },
 ];
 
@@ -93,10 +72,10 @@ export default function AccessibilityMenu({ prefs, onChangePrefs }) {
             </button>
           </div>
 
-          {/* Font Size Scaling */}
+          {/* Text Size Options */}
           <div>
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-text-muted mb-1.5">
-              Text Size Scaling (WCAG)
+              Text Size Options
             </label>
             <div className="grid grid-cols-3 gap-1.5">
               {FONT_SCALES.map((fs) => (
@@ -124,7 +103,7 @@ export default function AccessibilityMenu({ prefs, onChangePrefs }) {
                 High-Contrast Borders
               </span>
               <span className="text-[11px] text-text-muted">
-                Stronger card outlines & status labels
+                Thicker 2px card & column outlines
               </span>
             </div>
             <button

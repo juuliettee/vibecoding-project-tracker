@@ -13,6 +13,7 @@ export default function TeamModal({
   isOpen,
   onClose,
   teamMembers,
+  currentUser,
   onAddMember,
   onRemoveMember,
   tasks,
@@ -140,19 +141,20 @@ export default function TeamModal({
                     <span className="px-2 py-0.5 rounded-full text-[11px] font-mono bg-surface-page text-text-primary border border-slate-700">
                       {assignedCount} {assignedCount === 1 ? 'task' : 'tasks'}
                     </span>
-                    {teamMembers.length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => onRemoveMember(member.name)}
-                        aria-label={`Remove ${member.name} from team`}
-                        className="p-1 rounded text-slate-500 hover:text-type-bug hover:bg-type-bug/10 transition"
-                        title="Remove member"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
+                    {teamMembers.length > 1 &&
+                      currentUser?.name !== member.name && (
+                        <button
+                          type="button"
+                          onClick={() => onRemoveMember(member.name)}
+                          aria-label={`Remove ${member.name} from team`}
+                          className="p-1 rounded text-slate-500 hover:text-type-bug hover:bg-type-bug/10 transition"
+                          title={`Remove ${member.name} (tasks will be reassigned)`}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      )}
                   </div>
                 </div>
               );
@@ -183,7 +185,7 @@ export default function TeamModal({
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. Jordan Taylor"
+                placeholder="e.g. Owen Price"
                 className="w-full bg-surface-page border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary"
               />
             </div>
@@ -201,7 +203,7 @@ export default function TeamModal({
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="jordan@example.com"
+                placeholder="owen@example.com"
                 className="w-full bg-surface-page border border-slate-700 rounded-lg px-3 py-1.5 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-primary"
               />
             </div>

@@ -1,19 +1,19 @@
 # Vibecoding Project Tracker (VibeFlow) — Design System
 
 **Status:** Completed design specification (`design-done`)  
-**Author:** Juliette (Individual Coursework Submission — CM6312 Adopting Technologies)
+**Credits:** Based on the hackathon starter template by Prof. Dr. Ignacio Alvarez; completed by Juliette
 
 ---
 
 ## 1. Mood / vibe
 
-*Fast, focused, and high-contrast — a dark-slate workspace inspired by Linear and Raycast, designed to reduce eye strain and keep prompt context visible during long AI pair-programming sessions.*
+*Fast, focused, and high-contrast — a dark-slate workspace inspired by Linear and Raycast, designed to reduce glare and keep prompt context readable during long AI pair-programming sessions.*
 
 Visual references:
 
-- **Linear:** High-density dark slate surfaces (`#0f172a` / `#1e293b`) and clear card hierarchy.
-- **Raycast:** Monospace metadata badges (`JetBrains Mono`), subtle 1px borders, and keyboard-friendly modals.
-- **Vercel Dashboard:** High-contrast status indicators and restrained visual noise.
+- **[Linear](https://linear.app):** Inspired the compact dark card layout, subtle borders, and status grouping.
+- **[Raycast](https://www.raycast.com):** Inspired the monospace metadata badges, command-style modals, and keyboard-friendly controls.
+- **[Vercel Dashboard](https://vercel.com):** Inspired the restrained dark surfaces and clear status indicators.
 
 Anti-references — what we explicitly avoid:
 
@@ -22,16 +22,16 @@ Anti-references — what we explicitly avoid:
 
 ## 2. Color palette & Tailwind tokens
 
-Defined in `tailwind.config.js` and `src/index.css`. Brand tokens use RGB CSS variables (`--brand-primary`, `--brand-accent`) so Tailwind opacity modifiers (such as `bg-brand-primary/20` and `border-brand-primary/40`) work dynamically across all user-selected accent themes.
+Defined in `tailwind.config.js` and `src/index.css` using Tailwind's Slate palette for dark surfaces (`#0f172a` / `#1e293b`) and RGB CSS variables (`--brand-primary`, `--brand-accent`) for the brand accent so Tailwind opacity modifiers (`bg-brand-primary/20`, `border-brand-primary/40`) work across all user-selected themes.
 
 ### Brand & Surface tokens
 
 | Token | Default Hex / RGB | Where it shows up |
 |---|---|---|
-| `brand-primary` | `#6366f1` (`99 102 241`) | Primary buttons, active filter pills, focus rings, prompt badges (user-configurable in Accessibility Menu) |
-| `brand-accent` | `#8b5cf6` (`139 92 246`) | Wordmark gradient, secondary highlights, report deliverable icon |
-| `surface-page` | `#0f172a` | Main page background and modal surfaces |
-| `surface-card` | `#1e293b` | Task cards, inputs, dropdowns, and toast background |
+| `brand.primary` | `#6366f1` (`99 102 241`) | Primary buttons, active filter pills, focus rings, prompt badges (configurable in Accessibility Menu) |
+| `brand.accent` | `#8b5cf6` (`139 92 246`) | Wordmark gradient, secondary highlights, report deliverable icon |
+| `surface.page` | `#0f172a` | Main page background and modal surfaces |
+| `surface.card` | `#1e293b` | Task cards, inputs, dropdowns, and toast background |
 | `text-primary` | `#f8fafc` | Primary headings, card titles, and body copy |
 | `text-muted` | `#94a3b8` | Secondary captions, timestamps, and column counts |
 
@@ -39,40 +39,42 @@ Defined in `tailwind.config.js` and `src/index.css`. Brand tokens use RGB CSS va
 
 | Token | Hex | When used |
 |---|---|---|
-| `type-feature` | `#10b981` | Cards tagged `feature` (4px left emerald border + bolt badge) |
-| `type-bug` | `#ef4444` | Cards tagged `bug` (4px left crimson border + warning badge) |
+| `type-feature` | `#10b981` | Cards tagged `feature` (4px left emerald border + bolt icon + `FEATURE` label) |
+| `type-bug` | `#ef4444` | Cards tagged `bug` (4px left red border + warning icon + `BUG` label) |
 
 ### Due-date urgency tokens (`due-tint`)
 
-| Token | Hex | When used |
-|---|---|---|
-| `due-safe` | `#10b981` | More than 1 day remaining |
-| `due-warning` | `#f59e0b` | Due today or tomorrow (within 24–48 hours) |
-| `due-overdue` | `#ef4444` | Past due date |
-| `due-neutral` | `#64748b` | Task is in `Done` stage (overrides due date) or has no due date |
+Every due-date badge pairs its colour with an explicit text label (`On track`, `Due soon`, `Overdue`, `Done`) by default so deadline urgency is never communicated by colour alone (WCAG 1.4.1).
 
-## 3. Typography & Accessibility
+| Token | Hex | Label | When used |
+|---|---|---|---|
+| `due.safe` | `#10b981` | `On track` | 2 or more days away |
+| `due.warning` | `#f59e0b` | `Due soon` | Due today or tomorrow (0–1 days away) |
+| `due.overdue` | `#ef4444` | `Overdue` | Past due date (< 0 days) |
+| `due.neutral` | `#64748b` | `Done` | Task is in `Done` stage (overrides due date) or has no due date |
+
+## 3. Typography & Display Options
 
 Loaded via Google Fonts in `index.html` and configured in `tailwind.config.js`:
 
 | Role | Font Family | Why |
 |---|---|---|
-| Heading & Body (`font-sans`) | `Inter, ui-sans-serif, system-ui, sans-serif` | High x-height and legibility at compact 12px–14px card sizes |
-| Monospace (`font-mono`) | `JetBrains Mono, ui-monospace, monospace` | Clear visual separation for prompt context blocks, task IDs, emails, and dates |
+| Heading & Body (`font-sans`) | `Inter, ui-sans-serif, system-ui, sans-serif` | Clean legibility at compact 12px–14px card sizes |
+| Monospace (`font-mono`) | `JetBrains Mono, ui-monospace, monospace` | Visual separation for prompt context blocks, task IDs, emails, and dates |
 
-Accessibility & customisation support:
+Display & accessibility controls:
 
-- **Root Text Size Scaling:** Toggle between `100%` (`normal`), `110%` (`large`), and `120%` (`xlarge`) root font sizes via the Accessibility Menu.
-- **High-Contrast Mode:** Upgrades card outlines to 2px high-contrast borders and appends explicit text status tags (`[OVERDUE]`, `[WARNING]`, `[SAFE]`) to due dates so urgency is never communicated by colour alone.
-- **User-Definable Accent Colours:** Supports 6 RGB themes (`Indigo`, `Emerald`, `Violet`, `Cyan`, `Rose`, `Amber`).
-- **Keyboard & Screen Reader Semantics:** All modals implement `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and `Escape` key dismissal; toast notifications use `role="status"` and `aria-live="polite"`.
+- **Text Size Options:** Toggle between `100%` (`normal`), `110%` (`large`), and `120%` (`xlarge`) root font sizes via the Accessibility Menu (alongside standard browser zoom up to 200%).
+- **High-Contrast Borders:** Upgrades card and column outlines to thicker 2px borders with stronger surface contrast.
+- **User-Defined Accent Colours:** Supports 3 cool RGB themes (`Indigo`, `Violet`, `Cyan`). Green, amber, and red accents are intentionally excluded so the brand colour never clashes with `Feature`/`On track` (`#10b981`), `Due soon` (`#f59e0b`), or `Bug`/`Overdue` (`#ef4444`).
+- **Keyboard & Screen Reader Semantics:** Modals implement `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and `Escape` key dismissal; toast notifications use `role="status"` and `aria-live="polite"`.
 
 ## 4. Component principles
 
-- **Cards:** `surface-card` tiles with a 4px left type stripe (`type-feature` or `type-bug`), deadline urgency border/surface tint, monospace prompt context preview, inline stage selector, and one-click prompt copy.
+- **Cards:** `surface-card` tiles with a 4px left type stripe (`type-feature` or `type-bug`), deadline urgency border/surface tint and text label, monospace prompt context preview, inline stage selector, and one-click prompt copy.
 - **Buttons:** Solid `brand-primary` fills for primary actions and subtle `brand-primary/15` tinted buttons for secondary prompt actions.
 - **Modals:** Centered `surface-page` dialog over a frosted `slate-950/75` backdrop with `200ms` `animate-fadeIn` transition.
-- **Empty states:** Dashed border containers with clear, actionable prompts (`No tasks here — ready for the next prompt.` and `+ Paste {Label} Link`).
+- **Empty states:** Dashed border containers with clear prompts (`No tasks here — ready for the next prompt.` and `+ Paste {Label} Link`).
 
 ## 5. Voice / microcopy
 

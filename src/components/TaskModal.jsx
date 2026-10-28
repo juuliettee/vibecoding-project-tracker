@@ -113,6 +113,11 @@ export default function TaskModal({
       trimmedContext !== (task?.context || '').trim() ||
       (trimmedContext && contextTool !== task?.contextTool);
 
+    const now = new Date();
+    const todayLocal = `${now.getFullYear()}-${String(
+      now.getMonth() + 1
+    ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
     const taskPayload = {
       id: task?.id || `task-${Date.now()}`,
       title: title.trim(),
@@ -121,7 +126,7 @@ export default function TaskModal({
       status,
       assignee,
       dueDate: dueDate || null,
-      createdDate: task?.createdDate || new Date().toISOString().slice(0, 10),
+      createdDate: task?.createdDate || todayLocal,
       context: trimmedContext,
       contextTool: trimmedContext ? contextTool : null,
       contextUpdatedAt: trimmedContext

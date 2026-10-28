@@ -1,19 +1,23 @@
 # VibeFlow — Vibecoding Project Tracker
 
-**VibeFlow** is a Kanban-style project and prompt context tracker designed for software engineering teams building with AI coding assistants (Claude, ChatGPT, Cursor, Lovable, Replit). It pairs task lifecycle tracking with curated prompt briefings so teammates can hand off tasks and resume AI pair-programming sessions without losing prompt context.
+**Live App:** [https://vibecoding-project-tracker-rho.vercel.app](https://vibecoding-project-tracker-rho.vercel.app) *(opens publicly with no registration required; demo passcode: `2026`)*
+
+**VibeFlow** is a Kanban project and prompt context tracker for software engineering teams building with AI coding assistants (Claude, ChatGPT, Cursor, Lovable, Replit). It pairs task tracking with curated prompt briefings so teammates can hand off tasks and resume AI sessions without losing prompt context.
+
+*Based on the hackathon starter repository by Prof. Dr. Ignacio Alvarez; extended by Juliette.*
 
 ---
 
-## Key Features
+## Features
 
-- **Workspace Demo Sign-In & Profile Switcher:** Presents a client-side sign-in screen on initial load with one-click demo user profiles (`Juliette`, `Alex Chen`, `Sam Rivera`) and an email + demo passcode (`2026`) form, plus instant profile switching and sign-out from the header.
-- **Four-Stage Kanban Board:** Tracks tasks across `To Do`, `In Progress`, `Review`, and `Done` with inline stage switching, task counts, and full `localStorage` persistence.
-- **Visual Type & Deadline Tinting:** Distinguishes `Feature` (`#10b981`) vs. `Bug` (`#ef4444`) tasks with left accent stripes and highlights deadline urgency (`Overdue`, `Warning`, `Safe`, and `Neutral` when completed).
-- **Curated Prompt Context & One-Click Copy:** Stores the working prompt briefing, target AI tool, and last-saved timestamp on every task. Clicking **Copy as Prompt Context** serializes the task and prompt context into a structured Markdown briefing on the clipboard.
-- **Vibe Coding Prompt History Studio:** Aggregates all curated prompts across the project into a searchable studio with one-click full Markdown history export.
-- **Pinned Deliverable Anchor Board:** Provides four deliverable slots (`Presentation`, `Demo`, `Report`, `Documentation`) above the Kanban board where team members can paste, edit, and pin project links as they are produced.
-- **Team Directory & Role Management:** Stores team member names, `@example.com` contact emails, and specialist roles (`Senior Developer`, `Junior Developer`, `Architect`, `UX Member`, `Database Creator`, `Software Engineer`), supporting dynamic addition and removal of team members.
-- **Accessibility & Custom Theme Suite:** Includes WCAG text size scaling (`100%`, `110%`, `120%`), High-Contrast border and explicit `[OVERDUE]`/`[WARNING]`/`[SAFE]` status tag mode, six user-definable RGB brand accent colours, keyboard navigation, and ARIA semantics.
+- **Workspace Sign-In & Profile Switcher:** Shows a client-side sign-in screen on first load with one-click demo profiles (`Juliette`, `Tom Davies`, `Hannah Evans`) or an email + demo passcode (`2026`) form, plus profile switching and sign-out from the header.
+- **Four-Stage Kanban Board:** Tracks tasks across `To Do`, `In Progress`, `Review`, and `Done` with inline stage switching, task counts, and `localStorage` persistence.
+- **Type & Deadline Indicators:** Distinguishes `Feature` (`#10b981`) and `Bug` (`#ef4444`) cards with left stripes and icons, and displays deadline status using both colour tints and explicit text labels (`Overdue`, `Due soon`, `On track`, `Done`). Seed tasks use dates calculated relative to today so all urgency states are visible whenever the board is opened.
+- **Curated Prompt Context & One-Click Copy:** Stores the working prompt briefing, target AI tool, and last-saved timestamp on every task. Clicking **Copy as Prompt Context** formats the task and prompt context into a Markdown briefing on the clipboard.
+- **Prompt Studio & Board Filters:** Lists all saved prompts across the project with one-click Markdown export, alongside filters for search text, "My Tasks", assignee, task type, and AI tool.
+- **Deliverable Anchor Board:** Provides four deliverable slots (`Presentation`, `Demo`, `Report`, `Documentation`) pinned above the Kanban board where users can paste, edit, and clear project links.
+- **Team Directory:** Stores team member names, `@example.com` contact emails, and roles (`Senior Developer`, `Junior Developer`, `Architect`, `UX Member`, `Database Creator`, `Software Engineer`), with support for adding and removing members (and automatic task reassignment on removal).
+- **Accessibility & Display Menu:** Includes text size options (`100%`, `110%`, `120%`), a High-Contrast border toggle, three brand accent colours (`Indigo`, `Violet`, `Cyan`), keyboard navigation, and ARIA dialog/live-region attributes.
 
 ---
 
@@ -37,8 +41,7 @@ npm run build
 ```text
 .
 ├── PRD.md                           # Product Requirements Document
-├── DESIGN.md                        # Design System & Accessibility Specification
-├── PITCH.md                         # 5-Minute Pitch & Live Demo Walkthrough
+├── DESIGN.md                        # Design System & Token Specification
 ├── index.html                       # App entry HTML (loads Inter & JetBrains Mono)
 ├── tailwind.config.js               # Design tokens, RGB CSS variables & animations
 └── src/
@@ -50,9 +53,9 @@ npm run build
         ├── AnchorBoard.jsx          # Pinned Deliverable Anchor Board
         ├── TaskCard.jsx             # Kanban task card with inline handoff, stage & copy actions
         ├── TaskModal.jsx            # Create / Edit / Delete task modal with Prompt Context
-        ├── PromptVaultModal.jsx     # Vibe Coding Prompt History Studio & Markdown exporter
+        ├── PromptVaultModal.jsx     # Prompt Studio & Markdown exporter
         ├── LoginModal.jsx           # Client-side demo sign-in & profile switcher
         ├── TeamModal.jsx            # Team directory & role management modal
-        ├── AccessibilityMenu.jsx    # Text scaling, high-contrast & accent colour controls
-        └── Toast.jsx                # Accessible live-region toast notifications
+        ├── AccessibilityMenu.jsx    # Text size options, high-contrast & accent colour controls
+        └── Toast.jsx                # Live-region toast notifications
 ```

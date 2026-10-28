@@ -8,17 +8,18 @@ export default function LoginModal({
   currentUser,
   onLogin,
   onClose,
+  onResetDemo,
 }) {
   const [selectedEmail, setSelectedEmail] = useState(
     currentUser?.email || teamMembers[0]?.email || ''
   );
-  const [accessPin, setAccessPin] = useState(DEMO_PASSCODE);
+  const [accessPin, setAccessPin] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
       setSelectedEmail(currentUser?.email || teamMembers[0]?.email || '');
-      setAccessPin(DEMO_PASSCODE);
+      setAccessPin('');
       setError('');
     }
   }, [isOpen, currentUser, teamMembers]);
@@ -207,6 +208,18 @@ export default function LoginModal({
           >
             Sign In to Workspace
           </button>
+
+          {onResetDemo && (
+            <div className="pt-2 text-center">
+              <button
+                type="button"
+                onClick={onResetDemo}
+                className="text-[11px] font-mono text-text-muted hover:text-text-primary underline transition"
+              >
+                ↺ Reset demo profiles & tasks
+              </button>
+            </div>
+          )}
         </form>
       </div>
     </div>

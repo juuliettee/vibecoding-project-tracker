@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { formatContextTimestamp } from './TaskModal.jsx';
 
-const DEFAULT_TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
+const DEFAULT_TEAM = ['Juliette', 'Tom Davies', 'Hannah Evans'];
 
 const DEFAULT_STAGES = [
   { id: 'todo', label: 'To Do' },
@@ -12,10 +12,10 @@ const DEFAULT_STAGES = [
 
 /**
  * Evaluates the due-date status according to DESIGN.md §2:
- * - due-safe (#10b981): More than 2 days out.
- * - due-warning (#f59e0b): Less than 24 hours (or today/tomorrow).
- * - due-overdue (#ef4444): Past due date.
- * - due-neutral (#64748b): Task is 'done' (overrides date) or no date set.
+ * - due-safe (#10b981): 2 or more days away.
+ * - due-warning (#f59e0b): Due today or tomorrow (0–1 days away).
+ * - due-overdue (#ef4444): Past due date (< 0 days).
+ * - due-neutral (#64748b): Task is 'done' (overrides due date) or no date set.
  */
 export function getDueDateStatus(task) {
   if (!task || !task.dueDate || task.status === 'done') {
@@ -37,6 +37,20 @@ export function getDueDateStatus(task) {
     return 'warning';
   } else {
     return 'safe';
+  }
+}
+
+export function getDueDateStatusLabel(status) {
+  switch (status) {
+    case 'overdue':
+      return 'Overdue';
+    case 'warning':
+      return 'Due soon';
+    case 'safe':
+      return 'On track';
+    case 'neutral':
+    default:
+      return 'Done';
   }
 }
 
@@ -96,10 +110,15 @@ export default function TaskCard({
 
   const isFeature = task.type === 'feature';
   const dueDateStatus = getDueDateStatus(task);
+  const dueDateLabel = getDueDateStatusLabel(dueDateStatus);
   const badgeStyles = getDueDateBadgeStyles(dueDateStatus);
   const cardTintStyles = getDueDateCardTint(dueDateStatus, highContrast);
   const hasContext = Boolean(task.context && task.context.trim());
   const updatedTimeLabel = formatContextTimestamp(task.contextUpdatedAt);
+  const assigneeOptions =
+    task.assignee && !team.includes(task.assignee)
+      ? [task.assignee, ...team]
+      : team;
 
   const handleCopyClick = (e) => {
     e.stopPropagation();
@@ -274,7 +293,7 @@ export default function TaskCard({
             className="bg-surface-page/80 hover:bg-surface-page border border-slate-700/60 rounded px-1.5 py-0.5 text-xs text-text-primary focus:outline-none focus:ring-1 focus:ring-brand-primary cursor-pointer max-w-[110px] truncate"
             title="Hand off to teammate"
           >
-            {team.map((member) => (
+            {assigneeOptions.map((member) => (
               <option key={member} value={member}>
                 {member}
               </option>
@@ -284,17 +303,15 @@ export default function TaskCard({
         {task.dueDate && (
           <span
             className={`inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded ${badgeStyles}`}
-            title={`Due: ${task.dueDate} (${dueDateStatus})`}
+            title={`Due: ${task.dueDate} (${dueDateLabel})`}
           >
             <svg className="w-3 h-3 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             <span>{task.dueDate}</span>
-            {highContrast && (
-              <span className="uppercase text-[9px] font-bold ml-0.5">
-                [{dueDateStatus}]
-              </span>
-            )}
+            <span className="uppercase text-[9px] font-bold ml-0.5">
+              · {dueDateLabel}
+            </span>
           </span>
         )}
       </div>

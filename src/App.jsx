@@ -11,8 +11,24 @@ import { serializeTaskPrompt, copyTextToClipboard } from './utils/promptSerializ
 
 /**
  * VibeFlow — Vibecoding Project Tracker
- * Built according to PRD.md, DESIGN.md & CM6312 Client Elicitation Requirements.
+ * Built according to PRD.md & DESIGN.md.
  */
+
+export function getRelativeDate(offsetDays) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getRelativeIsoTimestamp(offsetDays, hours = 14, minutes = 30) {
+  const date = new Date();
+  date.setDate(date.getDate() + offsetDays);
+  date.setHours(hours, minutes, 0, 0);
+  return date.toISOString();
+}
 
 export const STAGES = [
   { id: 'todo',        label: 'To Do' },
@@ -31,14 +47,14 @@ export const INITIAL_TEAM_MEMBERS = [
   },
   {
     id: 'member-2',
-    name: 'Alex Chen',
-    email: 'alex.chen@example.com',
+    name: 'Tom Davies',
+    email: 'tom@example.com',
     role: 'UX Member',
   },
   {
     id: 'member-3',
-    name: 'Sam Rivera',
-    email: 'sam.rivera@example.com',
+    name: 'Hannah Evans',
+    email: 'hannah@example.com',
     role: 'Architect',
   },
 ];
@@ -69,92 +85,96 @@ export const INITIAL_ANCHORS = [
   },
 ];
 
-export const INITIAL_TASKS = [
-  {
-    id: 'task-1',
-    title: 'Scaffold Kanban board layout',
-    description: 'Set up 4 columns with responsive grid and task counts matching PRD §7.',
-    type: 'feature',
-    status: 'done',
-    assignee: 'Juliette',
-    dueDate: '2026-10-25',
-    createdDate: '2026-10-20',
-    context:
-      'Goal: Render 4 columns (To Do, In Progress, Review, Done) from STAGES.\nFiles: src/App.jsx\nConstraints: Use Tailwind grid-cols-4 on desktop, dark slate-900 surface, and localStorage persistence.',
-    contextTool: 'Cursor',
-    contextUpdatedAt: '2026-10-25T10:00:00.000Z',
-  },
-  {
-    id: 'task-2',
-    title: 'Implement task modal with prompt context',
-    description: 'Build modal to create and edit tasks, including curated AI briefing field.',
-    type: 'feature',
-    status: 'in-progress',
-    assignee: 'Alex Chen',
-    dueDate: '2026-10-28',
-    createdDate: '2026-10-20',
-    context:
-      'Goal: Add curated Context briefing textarea, AI tool selector (Claude/ChatGPT/Cursor/Lovable/Replit/Other), and automatic ISO contextUpdatedAt timestamp on save.\nFiles: src/components/TaskModal.jsx',
-    contextTool: 'Claude',
-    contextUpdatedAt: '2026-10-27T11:30:00.000Z',
-  },
-  {
-    id: 'task-3',
-    title: 'Fix card status dropdown flicker on handoff',
-    description: 'State update during assignee handoff causes unnecessary card rerender.',
-    type: 'bug',
-    status: 'todo',
-    assignee: 'Sam Rivera',
-    dueDate: '2026-10-25',
-    createdDate: '2026-10-20',
-    context:
-      'Bug: Clicking the assignee <select> inside TaskCard triggers parent card onClick modal open.\nFix: Call e.stopPropagation() on wrapper div and select onChange/onClick handlers in src/components/TaskCard.jsx.',
-    contextTool: 'ChatGPT',
-    contextUpdatedAt: '2026-10-26T13:15:00.000Z',
-  },
-  {
-    id: 'task-4',
-    title: 'Serialize task context to AI prompt format',
-    description: 'Provide single-click copy of task description + prompt history for continuing in AI.',
-    type: 'feature',
-    status: 'review',
-    assignee: 'Juliette',
-    dueDate: '2026-11-02',
-    createdDate: '2026-10-20',
-    context:
-      'Goal: Build a Markdown serializer combining task title, type, status, description, target AI tool, and curated context block for one-click clipboard copy.\nFiles: src/utils/promptSerializer.js, src/components/TaskCard.jsx',
-    contextTool: 'Cursor',
-    contextUpdatedAt: '2026-10-27T14:45:00.000Z',
-  },
-  {
-    id: 'task-5',
-    title: 'Pin Deliverable Anchor Board above Kanban',
-    description: 'Pin Presentation, Demo, Report, and Documentation slots with editable URLs.',
-    type: 'feature',
-    status: 'done',
-    assignee: 'Alex Chen',
-    dueDate: '2026-10-27',
-    createdDate: '2026-10-24',
-    context:
-      'Goal: Build AnchorBoard component supporting inline URL editing, status badges, and localStorage persistence.\nFiles: src/components/AnchorBoard.jsx, src/App.jsx',
-    contextTool: 'Lovable',
-    contextUpdatedAt: '2026-10-28T15:42:00.000Z',
-  },
-  {
-    id: 'task-6',
-    title: 'Add WCAG accessibility menu & Prompt Studio',
-    description: 'Include text scaling, high-contrast mode, custom brand accents, and prompt log export.',
-    type: 'feature',
-    status: 'review',
-    assignee: 'Sam Rivera',
-    dueDate: '2026-11-04',
-    createdDate: '2026-10-26',
-    context:
-      'Goal: Implement AccessibilityMenu (100%/110%/120% font scaling, High-Contrast borders, 6 RGB accent colors), LoginModal, TeamModal, and PromptVaultModal with full ARIA attributes.\nFiles: src/components/AccessibilityMenu.jsx, src/components/PromptVaultModal.jsx',
-    contextTool: 'Claude',
-    contextUpdatedAt: '2026-10-28T15:55:00.000Z',
-  },
-];
+export function buildInitialTasks() {
+  return [
+    {
+      id: 'task-1',
+      title: 'Scaffold Kanban board layout',
+      description: 'Set up 4 columns with responsive grid and task counts matching PRD §7.',
+      type: 'feature',
+      status: 'done',
+      assignee: 'Juliette',
+      dueDate: getRelativeDate(-3),
+      createdDate: getRelativeDate(-8),
+      context:
+        'Goal: Render 4 columns (To Do, In Progress, Review, Done) from STAGES.\nFiles: src/App.jsx\nConstraints: Use Tailwind grid-cols-4 on desktop, dark slate-900 surface, and localStorage persistence.',
+      contextTool: 'Cursor',
+      contextUpdatedAt: getRelativeIsoTimestamp(-3, 10, 0),
+    },
+    {
+      id: 'task-2',
+      title: 'Implement task modal with prompt context',
+      description: 'Build modal to create and edit tasks, including curated AI briefing field.',
+      type: 'feature',
+      status: 'in-progress',
+      assignee: 'Tom Davies',
+      dueDate: getRelativeDate(0),
+      createdDate: getRelativeDate(-6),
+      context:
+        'Goal: Add curated Context briefing textarea, AI tool selector (Claude/ChatGPT/Cursor/Lovable/Replit/Other), and automatic ISO contextUpdatedAt timestamp on save.\nFiles: src/components/TaskModal.jsx',
+      contextTool: 'Claude',
+      contextUpdatedAt: getRelativeIsoTimestamp(-1, 11, 30),
+    },
+    {
+      id: 'task-3',
+      title: 'Fix card status dropdown flicker on handoff',
+      description: 'State update during assignee handoff causes unnecessary card rerender.',
+      type: 'bug',
+      status: 'todo',
+      assignee: 'Hannah Evans',
+      dueDate: getRelativeDate(-2),
+      createdDate: getRelativeDate(-6),
+      context:
+        'Bug: Clicking the assignee <select> inside TaskCard triggers parent card onClick modal open.\nFix: Call e.stopPropagation() on wrapper div and select onChange/onClick handlers in src/components/TaskCard.jsx.',
+      contextTool: 'ChatGPT',
+      contextUpdatedAt: getRelativeIsoTimestamp(-2, 13, 15),
+    },
+    {
+      id: 'task-4',
+      title: 'Serialize task context to AI prompt format',
+      description: 'Provide single-click copy of task description + prompt history for continuing in AI.',
+      type: 'feature',
+      status: 'review',
+      assignee: 'Juliette',
+      dueDate: getRelativeDate(4),
+      createdDate: getRelativeDate(-5),
+      context:
+        'Goal: Build a Markdown serializer combining task title, type, status, description, target AI tool, and curated context block for one-click clipboard copy.\nFiles: src/utils/promptSerializer.js, src/components/TaskCard.jsx',
+      contextTool: 'Cursor',
+      contextUpdatedAt: getRelativeIsoTimestamp(-1, 14, 45),
+    },
+    {
+      id: 'task-5',
+      title: 'Pin Deliverable Anchor Board above Kanban',
+      description: 'Pin Presentation, Demo, Report, and Documentation slots with editable URLs.',
+      type: 'feature',
+      status: 'done',
+      assignee: 'Tom Davies',
+      dueDate: getRelativeDate(-1),
+      createdDate: getRelativeDate(-4),
+      context:
+        'Goal: Build AnchorBoard component supporting inline URL editing, status badges, and localStorage persistence.\nFiles: src/components/AnchorBoard.jsx, src/App.jsx',
+      contextTool: 'Lovable',
+      contextUpdatedAt: getRelativeIsoTimestamp(0, 9, 42),
+    },
+    {
+      id: 'task-6',
+      title: 'Add accessibility menu & Prompt Studio',
+      description: 'Include text size options, high-contrast borders, custom brand accents, and prompt log export.',
+      type: 'feature',
+      status: 'review',
+      assignee: 'Hannah Evans',
+      dueDate: getRelativeDate(6),
+      createdDate: getRelativeDate(-2),
+      context:
+        'Goal: Implement AccessibilityMenu (100%/110%/120% text size options, High-Contrast borders, 3 RGB accent colors), LoginModal, TeamModal, and PromptVaultModal with ARIA attributes.\nFiles: src/components/AccessibilityMenu.jsx, src/components/PromptVaultModal.jsx',
+      contextTool: 'Claude',
+      contextUpdatedAt: getRelativeIsoTimestamp(0, 11, 15),
+    },
+  ];
+}
+
+export const INITIAL_TASKS = buildInitialTasks();
 
 export const INITIAL_A11Y_PREFS = {
   fontScale: 'normal',
@@ -359,15 +379,38 @@ export default function App() {
   };
 
   const handleRemoveTeamMember = (memberName) => {
-    setTeamMembers((prev) => prev.filter((m) => m.name !== memberName));
-    if (currentUser?.name === memberName) {
-      setCurrentUser(null);
+    if (teamMembers.length <= 1 || currentUser?.name === memberName) {
+      return;
     }
-    setToastMessage(`Removed ${memberName} from the team roster.`);
+    const remainingMembers = teamMembers.filter((m) => m.name !== memberName);
+    const fallbackAssignee =
+      currentUser?.name || remainingMembers[0]?.name || 'Juliette';
+    const reassignedCount = tasks.filter(
+      (t) => t.assignee === memberName
+    ).length;
+    const targetLabel =
+      currentUser?.name === fallbackAssignee ? 'you' : fallbackAssignee;
+
+    setTeamMembers(remainingMembers);
+    setTasks((prevTasks) =>
+      prevTasks.map((t) =>
+        t.assignee === memberName ? { ...t, assignee: fallbackAssignee } : t
+      )
+    );
+    if (filterAssignee === memberName) {
+      setFilterAssignee('all');
+    }
+    setToastMessage(
+      reassignedCount > 0
+        ? `Removed ${memberName} · ${reassignedCount} ${
+            reassignedCount === 1 ? 'task' : 'tasks'
+          } reassigned to ${targetLabel}.`
+        : `Removed ${memberName} from the team.`
+    );
   };
 
   const handleResetDemoData = () => {
-    setTasks(INITIAL_TASKS);
+    setTasks(buildInitialTasks());
     setAnchors(INITIAL_ANCHORS);
     setTeamMembers(INITIAL_TEAM_MEMBERS);
     setSearchQuery('');
@@ -683,6 +726,7 @@ export default function App() {
         currentUser={currentUser}
         onLogin={handleLogin}
         onClose={currentUser ? () => setIsLoginModalOpen(false) : null}
+        onResetDemo={handleResetDemoData}
       />
 
       {/* Team Directory & Add Member Modal */}
@@ -690,6 +734,7 @@ export default function App() {
         isOpen={isTeamModalOpen}
         onClose={() => setIsTeamModalOpen(false)}
         teamMembers={teamMembers}
+        currentUser={currentUser}
         onAddMember={handleAddTeamMember}
         onRemoveMember={handleRemoveTeamMember}
         tasks={tasks}
