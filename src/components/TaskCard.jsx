@@ -3,6 +3,13 @@ import { formatContextTimestamp } from './TaskModal.jsx';
 
 const DEFAULT_TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
 
+const DEFAULT_STAGES = [
+  { id: 'todo', label: 'To Do' },
+  { id: 'in-progress', label: 'In Progress' },
+  { id: 'review', label: 'Review' },
+  { id: 'done', label: 'Done' },
+];
+
 /**
  * Evaluates the due-date status according to DESIGN.md §2:
  * - due-safe (#10b981): More than 2 days out.
@@ -49,7 +56,21 @@ export function getDueDateBadgeStyles(status) {
   }
 }
 
-export function getDueDateCardTint(status) {
+export function getDueDateCardTint(status, highContrast = false) {
+  if (highContrast) {
+    switch (status) {
+      case 'overdue':
+        return 'bg-red-950/35 border-2 border-red-400';
+      case 'warning':
+        return 'bg-amber-950/35 border-2 border-amber-400';
+      case 'safe':
+        return 'bg-slate-800 border-2 border-emerald-400/80';
+      case 'neutral':
+      default:
+        return 'bg-slate-800 border-2 border-slate-400';
+    }
+  }
+
   switch (status) {
     case 'overdue':
       return 'bg-red-950/20 border-red-500/40 hover:border-red-400/60';
@@ -67,15 +88,18 @@ export default function TaskCard({
   task,
   onClick,
   team = DEFAULT_TEAM,
+  stages = DEFAULT_STAGES,
   onHandoff,
+  onStageChange,
   onCopyPrompt,
+  highContrast = false,
 }) {
   const [justCopied, setJustCopied] = useState(false);
 
   const isFeature = task.type === 'feature';
   const dueDateStatus = getDueDateStatus(task);
   const badgeStyles = getDueDateBadgeStyles(dueDateStatus);
-  const cardTintStyles = getDueDateCardTint(dueDateStatus);
+  const cardTintStyles = getDueDateCardTint(dueDateStatus, highContrast);
   const hasContext = Boolean(task.context && task.context.trim());
   const updatedTimeLabel = formatContextTimestamp(task.contextUpdatedAt);
 
@@ -89,16 +113,24 @@ export default function TaskCard({
   };
 
   return (
-    <div
+    <article
+      aria-label={`${task.type} task: ${task.title}`}
+      tabIndex={0}
       onClick={onClick}
-      className={`hover:bg-slate-800 rounded-lg p-4 border shadow-sm hover:shadow-md transition-all group cursor-pointer ${cardTintStyles} ${
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick && onClick();
+        }
+      }}
+      className={`hover:bg-slate-800 rounded-lg p-4 border shadow-sm hover:shadow-md transition-all group cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500 ${cardTintStyles} ${
         isFeature
           ? 'border-l-4 border-l-emerald-500'
           : 'border-l-4 border-l-red-500'
       }`}
     >
-      {/* Header: Type Badge & ID */}
-      <div className="flex items-center justify-between mb-2">
+      {/* Header: Type Badge, Quick Stage Selector & ID */}
+      <div className="flex items-center justify-between gap-2 mb-2">
         <span
           className={`inline-flex items-center gap-1 text-[11px] font-mono uppercase px-2 py-0.5 rounded font-semibold border ${
             isFeature
@@ -107,7 +139,7 @@ export default function TaskCard({
           }`}
         >
           {isFeature ? (
-            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
               <path
                 fillRule="evenodd"
                 d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
@@ -120,6 +152,7 @@ export default function TaskCard({
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -131,9 +164,30 @@ export default function TaskCard({
           )}
           {task.type}
         </span>
-        <span className="text-[11px] font-mono text-slate-500">
-          {task.id}
-        </span>
+
+        <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
+          {onStageChange && (
+            <select
+              aria-label={`Change stage for ${task.title}`}
+              value={task.status}
+              onChange={(e) => {
+                e.stopPropagation();
+                onStageChange(task.id, e.target.value);
+              }}
+              className="bg-slate-900/90 hover:bg-slate-900 border border-slate-700 rounded px-1.5 py-0.5 text-[10px] font-mono text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
+              title="Move task to stage"
+            >
+              {stages.map((st) => (
+                <option key={st.id} value={st.id}>
+                  {st.label}
+                </option>
+              ))}
+            </select>
+          )}
+          <span className="text-[11px] font-mono text-slate-500">
+            {task.id}
+          </span>
+        </div>
       </div>
 
       {/* Title & Description */}
@@ -171,6 +225,7 @@ export default function TaskCard({
         <button
           type="button"
           onClick={handleCopyClick}
+          aria-label={`Copy prompt context for ${task.title}`}
           className={`w-full py-1.5 px-2.5 rounded-md text-[11px] font-mono font-medium border transition flex items-center justify-center gap-1.5 ${
             justCopied
               ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
@@ -180,14 +235,14 @@ export default function TaskCard({
         >
           {justCopied ? (
             <>
-              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
               <span>Copied Prompt Context!</span>
             </>
           ) : (
             <>
-              <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -211,6 +266,7 @@ export default function TaskCard({
             {task.assignee ? task.assignee.charAt(0) : '?'}
           </span>
           <select
+            aria-label={`Hand off ${task.title} to teammate`}
             value={task.assignee}
             onChange={(e) => {
               e.stopPropagation();
@@ -232,13 +288,18 @@ export default function TaskCard({
             className={`inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded ${badgeStyles}`}
             title={`Due: ${task.dueDate} (${dueDateStatus})`}
           >
-            <svg className="w-3 h-3 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            {task.dueDate}
+            <span>{task.dueDate}</span>
+            {highContrast && (
+              <span className="uppercase text-[9px] font-bold ml-0.5">
+                [{dueDateStatus}]
+              </span>
+            )}
           </span>
         )}
       </div>
-    </div>
+    </article>
   );
 }

@@ -1,13 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import TaskModal from './components/TaskModal.jsx';
 import TaskCard from './components/TaskCard.jsx';
 import AnchorBoard from './components/AnchorBoard.jsx';
+import LoginModal from './components/LoginModal.jsx';
+import TeamModal from './components/TeamModal.jsx';
+import PromptVaultModal from './components/PromptVaultModal.jsx';
+import AccessibilityMenu, { ACCENT_THEMES } from './components/AccessibilityMenu.jsx';
 import Toast from './components/Toast.jsx';
 import { serializeTaskPrompt, copyTextToClipboard } from './utils/promptSerializer.js';
 
 /**
  * Vibecoding Project Tracker — VibeFlow
- * Built according to PRD.md & DESIGN.md.
+ * Built according to PRD.md, DESIGN.md & CM6312 Client Elicitation Requirements.
  */
 
 // The four columns of the board, in render order.
@@ -18,8 +22,29 @@ export const STAGES = [
   { id: 'done',        label: 'Done' },
 ];
 
-// The three allowed team members from PRD §8
-export const TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
+// Default team members from PRD §8 + Q&A User Data (Name, Email, SWE Role)
+export const INITIAL_TEAM_MEMBERS = [
+  {
+    id: 'member-1',
+    name: 'Juliette',
+    email: 'ortegagutamajv@cardiff.ac.uk',
+    role: 'Senior Developer',
+  },
+  {
+    id: 'member-2',
+    name: 'Alex Chen',
+    email: 'alex.chen@vibeflow.dev',
+    role: 'UX Member',
+  },
+  {
+    id: 'member-3',
+    name: 'Sam Rivera',
+    email: 'sam.rivera@vibeflow.dev',
+    role: 'Architect',
+  },
+];
+
+export const TEAM = INITIAL_TEAM_MEMBERS.map((m) => m.name);
 
 // The four pinned deliverable slots from PRD §3 & §5 (M11)
 export const INITIAL_ANCHORS = [
@@ -104,6 +129,12 @@ export const INITIAL_TASKS = [
   },
 ];
 
+export const INITIAL_A11Y_PREFS = {
+  fontScale: 'normal',
+  highContrast: false,
+  accent: 'indigo',
+};
+
 /**
  * A tiny localStorage hook — survives reloads, no library needed.
  */
@@ -113,7 +144,6 @@ export function useLocalStorage(key, initialValue) {
       const raw = window.localStorage.getItem(key);
       if (raw != null) {
         const parsed = JSON.parse(raw);
-        // Upgrade early M4-M8 seed tasks to rich M9 context & updated demo dates
         if (
           key === 'vibetracker.tasks' &&
           Array.isArray(parsed) &&
@@ -144,9 +174,78 @@ export function useLocalStorage(key, initialValue) {
 export default function App() {
   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', INITIAL_TASKS);
   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', INITIAL_ANCHORS);
+  const [teamMembers, setTeamMembers] = useLocalStorage(
+    'vibetracker.teamMembers',
+    INITIAL_TEAM_MEMBERS
+  );
+  const [currentUser, setCurrentUser] = useLocalStorage(
+    'vibetracker.currentUser',
+    INITIAL_TEAM_MEMBERS[0]
+  );
+  const [a11yPrefs, setA11yPrefs] = useLocalStorage(
+    'vibetracker.a11y',
+    INITIAL_A11Y_PREFS
+  );
+
+  // Modals & UI States
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [isPromptVaultOpen, setIsPromptVaultOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Secret Sauce Filter & Search Bar States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterAssignee, setFilterAssignee] = useState('all');
+  const [filterType, setFilterType] = useState('all');
+  const [filterTool, setFilterTool] = useState('all');
+
+  const teamNames = useMemo(
+    () => teamMembers.map((m) => m.name),
+    [teamMembers]
+  );
+
+  const activeAccent = useMemo(
+    () =>
+      ACCENT_THEMES.find((t) => t.id === a11yPrefs.accent) || ACCENT_THEMES[0],
+    [a11yPrefs.accent]
+  );
+
+  useEffect(() => {
+    const scaleMap = { normal: '100%', large: '108%', xlarge: '116%' };
+    document.documentElement.style.fontSize =
+      scaleMap[a11yPrefs.fontScale] || '100%';
+  }, [a11yPrefs.fontScale]);
+
+  const filteredTasks = useMemo(() => {
+    return tasks.filter((t) => {
+      if (filterAssignee === 'mine' && currentUser) {
+        if (t.assignee !== currentUser.name) return false;
+      } else if (filterAssignee !== 'all' && t.assignee !== filterAssignee) {
+        return false;
+      }
+
+      if (filterType !== 'all' && t.type !== filterType) {
+        return false;
+      }
+
+      if (filterTool !== 'all' && (t.contextTool || 'None') !== filterTool) {
+        return false;
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const matchTitle = (t.title || '').toLowerCase().includes(q);
+        const matchDesc = (t.description || '').toLowerCase().includes(q);
+        const matchCtx = (t.context || '').toLowerCase().includes(q);
+        const matchId = (t.id || '').toLowerCase().includes(q);
+        if (!matchTitle && !matchDesc && !matchCtx && !matchId) return false;
+      }
+
+      return true;
+    });
+  }, [tasks, filterAssignee, filterType, filterTool, searchQuery, currentUser]);
 
   const handleOpenCreateModal = () => {
     setEditingTask(null);
@@ -179,6 +278,16 @@ export default function App() {
     setToastMessage(`Handed off to ${newAssignee}. They've got it!`);
   };
 
+  const handleStageChange = (taskId, newStageId) => {
+    const stageObj = STAGES.find((s) => s.id === newStageId);
+    setTasks((prevTasks) =>
+      prevTasks.map((t) => (t.id === taskId ? { ...t, status: newStageId } : t))
+    );
+    if (stageObj) {
+      setToastMessage(`Moved task to ${stageObj.label}.`);
+    }
+  };
+
   const handleCopyPromptContext = async (task) => {
     const markdownPrompt = serializeTaskPrompt(task);
     await copyTextToClipboard(markdownPrompt);
@@ -197,18 +306,50 @@ export default function App() {
     );
   };
 
+  const handleLogin = (member) => {
+    setCurrentUser(member);
+    setIsLoginModalOpen(false);
+    setToastMessage(`Signed in as ${member.name} (${member.role}).`);
+  };
+
+  const handleAddTeamMember = (newMember) => {
+    setTeamMembers((prev) => [...prev, newMember]);
+    setToastMessage(`Added ${newMember.name} (${newMember.role}) to the team!`);
+  };
+
+  const handleRemoveTeamMember = (memberName) => {
+    setTeamMembers((prev) => prev.filter((m) => m.name !== memberName));
+    setToastMessage(`Removed ${memberName} from the team roster.`);
+  };
+
+  const hasActiveFilters =
+    searchQuery.trim() !== '' ||
+    filterAssignee !== 'all' ||
+    filterType !== 'all' ||
+    filterTool !== 'all';
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col">
       {/* App Header */}
-      <header className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-slate-800">
+      <header className="mb-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-2xl font-bold tracking-tight">
               <span className="text-white">Vibe</span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
+              <span
+                className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400"
+                style={{
+                  backgroundImage: `linear-gradient(to right, ${activeAccent.hex}, #a855f7)`,
+                }}
+              >
+                Flow
+              </span>
             </h1>
-            <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v1.1 · project-deliverables
+            <span
+              className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-300 border border-indigo-500/30"
+              style={{ borderColor: `${activeAccent.hex}55`, color: activeAccent.hex }}
+            >
+              v1.2 · secret-sauce
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
@@ -216,21 +357,71 @@ export default function App() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-mono">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>Team: {TEAM.join(', ')}</span>
-          </div>
-
+        {/* Header Actions: User Session, Team Roster, Prompt Studio, A11y, + Add Task */}
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Active User & Login / Switch User Button */}
           <button
+            type="button"
+            onClick={() => setIsLoginModalOpen(true)}
+            aria-label="Switch user or open workspace sign in"
+            className="px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-xs flex items-center gap-2 transition"
+            title="Switch active user / Open Sign In screen"
+          >
+            <span className="w-5 h-5 rounded-full bg-indigo-500/25 text-indigo-300 flex items-center justify-center text-[10px] font-bold">
+              {currentUser?.name ? currentUser.name.charAt(0) : '?'}
+            </span>
+            <span className="font-medium text-slate-200">
+              {currentUser?.name || 'Sign In'}
+            </span>
+            <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">
+              ({currentUser?.role || 'Guest'})
+            </span>
+            <span className="text-[10px] font-mono text-indigo-400 ml-0.5">
+              ⇄ Switch
+            </span>
+          </button>
+
+          {/* Team Directory & Add Member Button */}
+          <button
+            type="button"
+            onClick={() => setIsTeamModalOpen(true)}
+            aria-label="Open team directory and add team members"
+            className="px-3 py-1.5 rounded-lg bg-slate-800/90 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-slate-200 flex items-center gap-1.5 transition"
+            title="View team emails/roles & add team members"
+          >
+            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Team ({teamMembers.length})</span>
+            <span className="text-indigo-400">+</span>
+          </button>
+
+          {/* Secret Sauce: Vibe Coding Prompt History Studio */}
+          <button
+            type="button"
+            onClick={() => setIsPromptVaultOpen(true)}
+            aria-label="Open Vibe Coding Prompt History Studio"
+            className="px-3 py-1.5 rounded-lg bg-indigo-950/60 hover:bg-indigo-900/50 border border-indigo-500/40 text-xs font-mono text-indigo-200 flex items-center gap-1.5 transition"
+            title="Open Vibe Coding Prompt History & Export Studio"
+          >
+            <span>✦</span>
+            <span>Prompt Studio</span>
+          </button>
+
+          {/* Accessibility & Custom Accent Colour Menu */}
+          <AccessibilityMenu prefs={a11yPrefs} onChangePrefs={setA11yPrefs} />
+
+          {/* + Add Task Primary Action */}
+          <button
+            type="button"
             onClick={handleOpenCreateModal}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 active:scale-95 text-white rounded-lg text-xs font-semibold shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition flex items-center gap-1.5"
+            style={{ backgroundColor: activeAccent.hex }}
+            className="px-4 py-2 hover:opacity-95 active:scale-95 text-white rounded-lg text-xs font-semibold shadow-lg transition flex items-center gap-1.5"
           >
             <svg
               className="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -247,14 +438,139 @@ export default function App() {
       {/* M11 Deliverable Anchor Board (Pinned above the Kanban Columns) */}
       <AnchorBoard anchors={anchors} onUpdateAnchor={handleUpdateAnchor} />
 
+      {/* M12 Secret Sauce: Interactive Search, My-Tasks Filter & AI Tool Filter Bar */}
+      <section
+        aria-label="Task Search and Filters"
+        className="mb-5 p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex flex-wrap items-center justify-between gap-3"
+      >
+        <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-[240px]">
+          {/* Search Input */}
+          <div className="relative flex-1 min-w-[180px] max-w-xs">
+            <input
+              type="search"
+              aria-label="Search tasks by title, description, or prompt context"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search tasks or prompts..."
+              className="w-full bg-slate-800/90 border border-slate-700 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            <svg
+              className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+
+          {/* Quick "My Tasks" Toggle */}
+          {currentUser && (
+            <button
+              type="button"
+              aria-pressed={filterAssignee === 'mine'}
+              onClick={() =>
+                setFilterAssignee((prev) => (prev === 'mine' ? 'all' : 'mine'))
+              }
+              className={`px-2.5 py-1.5 rounded-lg text-xs font-mono border transition ${
+                filterAssignee === 'mine'
+                  ? 'bg-indigo-600/25 text-indigo-200 border-indigo-500/60'
+                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+              }`}
+            >
+              My Tasks ({currentUser.name})
+            </button>
+          )}
+
+          {/* Assignee Filter */}
+          <select
+            aria-label="Filter by Assignee"
+            value={filterAssignee}
+            onChange={(e) => setFilterAssignee(e.target.value)}
+            className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="all">All Assignees</option>
+            {currentUser && (
+              <option value="mine">Assigned to Me ({currentUser.name})</option>
+            )}
+            {teamNames.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </select>
+
+          {/* Type Filter */}
+          <select
+            aria-label="Filter by Task Type"
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="all">All Types</option>
+            <option value="feature">Features Only</option>
+            <option value="bug">Bugs Only</option>
+          </select>
+
+          {/* AI Tool Filter */}
+          <select
+            aria-label="Filter by AI Tool"
+            value={filterTool}
+            onChange={(e) => setFilterTool(e.target.value)}
+            className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-mono text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="all">All AI Tools</option>
+            <option value="Cursor">Cursor</option>
+            <option value="Claude">Claude</option>
+            <option value="ChatGPT">ChatGPT</option>
+            <option value="Lovable">Lovable</option>
+            <option value="Replit">Replit</option>
+            <option value="Other">Other</option>
+          </select>
+
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={() => {
+                setSearchQuery('');
+                setFilterAssignee('all');
+                setFilterType('all');
+                setFilterTool('all');
+              }}
+              className="px-2.5 py-1.5 rounded-lg text-xs font-mono text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition"
+            >
+              Reset Filters ✕
+            </button>
+          )}
+        </div>
+
+        <div className="text-xs font-mono text-slate-400">
+          Showing {filteredTasks.length} of {tasks.length} tasks
+        </div>
+      </section>
+
       {/* Main Kanban Board */}
-      <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
+      <main
+        aria-label="Kanban Board"
+        className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start"
+      >
         {STAGES.map((stage) => {
-          const stageTasks = tasks.filter((t) => t.status === stage.id);
+          const stageTasks = filteredTasks.filter((t) => t.status === stage.id);
           return (
-            <div
+            <section
               key={stage.id}
-              className="bg-slate-900/60 rounded-xl border border-slate-800/80 p-4 flex flex-col min-h-[500px]"
+              aria-label={`${stage.label} column`}
+              className={`bg-slate-900/60 rounded-xl p-4 flex flex-col min-h-[500px] ${
+                a11yPrefs.highContrast
+                  ? 'border-2 border-slate-600'
+                  : 'border border-slate-800/80'
+              }`}
             >
               {/* Column Header */}
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
@@ -279,20 +595,23 @@ export default function App() {
                     <TaskCard
                       key={task.id}
                       task={task}
-                      team={TEAM}
+                      team={teamNames}
+                      stages={STAGES}
                       onClick={() => handleOpenEditModal(task)}
                       onHandoff={handleHandoffTask}
+                      onStageChange={handleStageChange}
                       onCopyPrompt={handleCopyPromptContext}
+                      highContrast={a11yPrefs.highContrast}
                     />
                   ))
                 )}
               </div>
-            </div>
+            </section>
           );
         })}
       </main>
 
-      {/* CRUD Modal */}
+      {/* CRUD Task Modal */}
       <TaskModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -300,8 +619,36 @@ export default function App() {
         onDelete={handleDeleteTask}
         onCopyPrompt={handleCopyPromptContext}
         task={editingTask}
-        team={TEAM}
+        team={teamNames}
         stages={STAGES}
+      />
+
+      {/* Login / Workspace Profile Switcher Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        teamMembers={teamMembers}
+        currentUser={currentUser}
+        onLogin={handleLogin}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
+
+      {/* Team Directory & Add Member Modal */}
+      <TeamModal
+        isOpen={isTeamModalOpen}
+        onClose={() => setIsTeamModalOpen(false)}
+        teamMembers={teamMembers}
+        onAddMember={handleAddTeamMember}
+        onRemoveMember={handleRemoveTeamMember}
+        tasks={tasks}
+      />
+
+      {/* Secret Sauce: Vibe Coding Prompt History Studio Modal */}
+      <PromptVaultModal
+        isOpen={isPromptVaultOpen}
+        onClose={() => setIsPromptVaultOpen(false)}
+        tasks={tasks}
+        onCopyTaskPrompt={handleCopyPromptContext}
+        onToast={setToastMessage}
       />
 
       {/* Toast Notification */}

@@ -29,11 +29,11 @@ Anti-references — what we are explicitly **not** trying to look like:
 
 These are the colors the build milestones will reference. Once chosen, paste the hex values into `tailwind.config.js` so the rest of the team can use Tailwind utility classes (e.g. `bg-brand-primary`, `border-due-warning`).
 
-### Brand
+### Brand (with M12 User-Definable Accent Support)
 
 | Token | Hex | Where it shows up |
 |---|---|---|
-| `brand-primary` | `#6366f1` | Header, "+" button, focus rings, primary action states |
+| `brand-primary` | `#6366f1` | Default primary brand accent (user-customizable in M12 Accessibility Menu: Indigo, Emerald, Violet, Cyan, Rose, Amber) |
 | `brand-accent` | `#8b5cf6` | Highlights, hover states, badges, prompt actions |
 | `surface-page` | `#0f172a` | Page background (deep dark slate) |
 | `surface-card` | `#1e293b` | Card background, modals, dropdown menus |
@@ -56,7 +56,7 @@ These are the colors the build milestones will reference. Once chosen, paste the
 | `due-overdue` | `#ef4444` | Past due |
 | `due-neutral` | `#64748b` | Done (overrides date) |
 
-## 3. Typography
+## 3. Typography & Accessibility (`!!`)
 
 | Role | Font | Why |
 |---|---|---|
@@ -64,23 +64,24 @@ These are the colors the build milestones will reference. Once chosen, paste the
 | Body | `Inter, ui-sans-serif, system-ui` | High legibility at 13px–15px in dense card layouts |
 | Monospace (tags, badges, code) | `JetBrains Mono, ui-monospace, monospace` | Technical feel for prompt context, git hashes, and timestamps |
 
-Suggested sizes (override only if the design demands it):
+Suggested sizes & Accessibility Scaling:
 
 - Page title: 24 px / semibold
 - Section header: 16 px / semibold uppercase
 - Card title: 14 px / medium
 - Body: 14 px / regular
 - Caption: 12 px / regular muted
+- **Accessibility Scaling (M12):** Supports live root font scaling (`100%`, `110%`, `120%`), High-Contrast border and explicit status tag mode (`[OVERDUE]`, `[WARNING]`, `[SAFE]`), semantic ARIA landmarks (`role="dialog"`, `aria-modal="true"`, `aria-live="polite"`), and keyboard navigation (`Tab`, `Enter`, `Escape`).
 
 ## 4. Component principles
 
 One short sentence per element. These set the tone for the build phase — Person A's modal and Person B's anchor board should both feel like they came from this doc.
 
-- **Cards:** Clean dark slate tiles with 1px border, subtle top accent indicator, hover elevation, and immediate readable metadata.
+- **Cards:** Clean dark slate tiles with 1px border, subtle left type stripe, deadline surface tint, prompt snippet preview, and immediate readable metadata.
 - **Buttons:** Solid tactile fills with slight hover brightness, smooth 150ms transitions, and unmistakable active focus rings.
-- **Modal:** Centered slate-800 modal with 1px border, frosted dark backdrop overlay (50% opacity), and explicit keyboard/escape dismiss.
-- **Empty states:** Dashed slate-700 border with warm, motivating copy — never sterile or discouraging.
-- **Drag affordance (if used):** Crisp stage action buttons and status dropdowns for rapid, deterministic state changes.
+- **Modal:** Centered slate-900 modal with 1px border, frosted dark backdrop overlay, and explicit keyboard/escape dismiss.
+- **Empty states:** Dashed slate-800 border with warm, motivating copy — never sterile or discouraging.
+- **Stage movement affordance:** Crisp stage selector directly on each card header plus full modal status control for rapid, deterministic state changes.
 
 ## 5. Voice / microcopy
 
@@ -99,17 +100,8 @@ Three lines of microcopy that capture the tone of the product. Keep it short —
 The tracker probably doesn't need a logo, but it does need a name and a wordmark style.
 
 - **Product name:** `VibeFlow`
-- **Wordmark style:** `VibeFlow` with `Vibe` in bold slate-100 and `Flow` in an indigo-to-purple gradient (`text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400`).
-
-## 7. Out of scope (this hackathon)
-
-To keep design tight, the following are explicitly not part of `design-done`:
-
-- A dark mode toggle. Pick one mode (dark slate) and ship it.
-- Multiple themes. One brand, applied consistently.
-- Animations beyond a 200 ms fade on toast notifications.
-- A custom icon set. Use inline SVGs or clean Lucide-style iconography.
+- **Wordmark style:** `VibeFlow` with `Vibe` in bold white and `Flow` in a dynamic user-definable accent-to-purple gradient.
 
 ---
 
-*DESIGN.md version: hackathon-starter v1 · Completed by Alex Chen (Person B)*
+*DESIGN.md version: hackathon-starter v1 · Completed by Alex Chen (Person B) & Team VibeFlow*
