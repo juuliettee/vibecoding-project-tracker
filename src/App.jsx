@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import TaskModal from './components/TaskModal.jsx';
 import TaskCard from './components/TaskCard.jsx';
+import AnchorBoard from './components/AnchorBoard.jsx';
 import Toast from './components/Toast.jsx';
 import { serializeTaskPrompt, copyTextToClipboard } from './utils/promptSerializer.js';
 
@@ -19,6 +20,30 @@ export const STAGES = [
 
 // The three allowed team members from PRD §8
 export const TEAM = ['Juliette', 'Alex Chen', 'Sam Rivera'];
+
+// The four pinned deliverable slots from PRD §3 & §5 (M11)
+export const INITIAL_ANCHORS = [
+  {
+    id: 'presentation',
+    label: 'Presentation',
+    url: 'https://docs.google.com/presentation/d/vibeflow-pitch-deck',
+  },
+  {
+    id: 'demo',
+    label: 'Demo',
+    url: 'https://vibeflow-tracker.vercel.app',
+  },
+  {
+    id: 'report',
+    label: 'Report',
+    url: 'https://github.com/juuliettee/vibecoding-project-tracker/blob/main/PRD.md',
+  },
+  {
+    id: 'documentation',
+    label: 'Documentation',
+    url: 'https://github.com/juuliettee/vibecoding-project-tracker/blob/main/DESIGN.md',
+  },
+];
 
 export const INITIAL_TASKS = [
   {
@@ -118,6 +143,7 @@ export function useLocalStorage(key, initialValue) {
 
 export default function App() {
   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', INITIAL_TASKS);
+  const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', INITIAL_ANCHORS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
@@ -160,6 +186,17 @@ export default function App() {
     setToastMessage('Prompt briefing copied! Paste into Claude/ChatGPT/Cursor.');
   };
 
+  const handleUpdateAnchor = (anchorId, newUrl) => {
+    setAnchors((prevAnchors) =>
+      prevAnchors.map((a) => (a.id === anchorId ? { ...a, url: newUrl } : a))
+    );
+    const target = anchors.find((a) => a.id === anchorId);
+    const label = target ? target.label : 'Deliverable';
+    setToastMessage(
+      newUrl ? `${label} deliverable link pinned!` : `${label} deliverable link cleared.`
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 p-6 flex flex-col">
       {/* App Header */}
@@ -171,7 +208,7 @@ export default function App() {
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Flow</span>
             </h1>
             <span className="px-2 py-0.5 rounded text-xs font-mono font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              v1.0 · copy-context
+              v1.1 · project-deliverables
             </span>
           </div>
           <p className="text-sm text-slate-400 mt-1">
@@ -206,6 +243,9 @@ export default function App() {
           </button>
         </div>
       </header>
+
+      {/* M11 Deliverable Anchor Board (Pinned above the Kanban Columns) */}
+      <AnchorBoard anchors={anchors} onUpdateAnchor={handleUpdateAnchor} />
 
       {/* Main Kanban Board */}
       <main className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
